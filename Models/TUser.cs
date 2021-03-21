@@ -43,6 +43,8 @@ namespace RoomReservation.Models
         public decimal UserTp { get; set; }
         [Column("user_status", TypeName = "decimal(1, 0)")]
         public decimal UserStatus { get; set; }
+        [Column("user_type")]
+        public bool? UserType { get; set; }
 
         [InverseProperty("User")]
         public virtual ICollection<TRate> TRate { get; set; }
@@ -53,10 +55,7 @@ namespace RoomReservation.Models
         {
             using (SHA256 sha256Hash = SHA256.Create())
             {
-                // ComputeHash - returns byte array  
                 byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(UserPass));
-
-                // Convert byte array to a string   
                 StringBuilder builder = new StringBuilder();
                 for (int i = 0; i < bytes.Length; i++)
                 {

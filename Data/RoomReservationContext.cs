@@ -2,12 +2,13 @@
 using System.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
+using RoomReservation.Models;
 
 // Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
 // If you have enabled NRTs for your project, then un-comment the following line:
 // #nullable disable
 
-namespace RoomReservation.Models
+namespace RoomReservation.Data
 {
     public partial class RoomReservationContext : DbContext
     {
@@ -142,6 +143,8 @@ namespace RoomReservation.Models
                 entity.Property(e => e.UserPass)
                     .IsUnicode(false)
                     .IsFixedLength();
+
+                entity.Property(e => e.UserType).HasDefaultValueSql("((1))");
             });
 
             OnModelCreatingPartial(modelBuilder);

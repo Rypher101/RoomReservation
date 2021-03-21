@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using RoomReservation.Data;
+using RoomReservation.Models;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using RoomReservation.Models;
 
 namespace RoomReservation.Controllers
 {
@@ -21,7 +21,39 @@ namespace RoomReservation.Controllers
         // GET: Login
         public IActionResult Index()
         {
+            HttpContext.Session.Clear();
             return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> LoginMember([Bind("UserEmail,UserPass")] TUser tUser)
+        {
+            try
+            {
+                tUser.ShaEnc();
+                var user = await _context.TUser
+                    .FirstOrDefaultAsync(e => e.UserEmail == tUser.UserEmail && e.UserPass == tUser.UserPass && e.UserStatus == 1);
+
+                if (user == null)
+                {
+                    TempData["Error"] = "Invalid login credentials";
+                    return RedirectToAction("Index");
+                }
+
+                HttpContext.Session.SetString("UName", user.UserName);
+                HttpContext.Session.SetString("UEmail", user.UserEmail);
+                HttpContext.Session.SetInt32("UID", user.UserId);
+                HttpContext.Session.SetString("UType", (bool)user.UserType ? "C" : "A");
+
+                if ((bool)user.UserType) return RedirectToAction("Index", "Home");
+                else return RedirectToAction("Index", "Admin");
+            }
+            catch (Exception)
+            {
+                TempData["Error"] = "Error occured during login process. Please try again.";
+                return RedirectToAction("Index");
+            }
         }
 
         // GET: Login/Details/5
@@ -59,6 +91,7 @@ namespace RoomReservation.Controllers
             {
                 try
                 {
+                    tUser.UserStatus = 1;
                     tUser.ShaEnc();
                     _context.Add(tUser);
                     await _context.SaveChangesAsync();
@@ -67,12 +100,12 @@ namespace RoomReservation.Controllers
                 }
                 catch (Exception ex)
                 {
-                    if(ex.InnerException.ToString().Contains("Violation of UNIQUE KEY constraint")) ViewBag.Error = "This email is already used. Please use another email address";
+                    if (ex.InnerException.ToString().Contains("Violation of UNIQUE KEY constraint")) ViewBag.Error = "This email is already used. Please use another email address";
                     else ViewBag.Error = "Unable to register this user. Please try agian";
                     return View(tUser);
 
                 }
-                
+
             }
 
             ViewBag.Error = "Unable to register this user. Please try agian";
