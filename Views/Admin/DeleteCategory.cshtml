@@ -1,0 +1,73 @@
+﻿@model RoomReservation.Models.TCategory
+
+@{
+    ViewData["Title"] = "DeleteCategory";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="card ">
+                    <div class="card-header ">
+                        <div class="row">
+                            <h4 class="card-title" style="padding-left:10px">Delete Category : @Html.DisplayFor(model => model.CatType)</h4>
+                        </div>
+                        <p style="color:darkgreen">@TempData["Message"]</p>
+                        <p style="color:red">@TempData["Error"]</p>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row justify-content-md-center">
+                            <div class="col">
+                                <dl class="row">
+                                    <dt class="col-md-2">
+                                        @Html.DisplayNameFor(model => model.CatId) :
+                                    </dt>
+                                    <dd class="col-md-10">
+                                        @Html.DisplayFor(model => model.CatId)
+                                    </dd>
+                                    <dt class="col-md-2">
+                                        @Html.DisplayNameFor(model => model.CatType) :
+                                    </dt>
+                                    <dd class="col-md-10">
+                                        @Html.DisplayFor(model => model.CatType)
+                                    </dd>
+                                    <dt class="col-md-2">
+                                        @Html.DisplayNameFor(model => model.CatBed) :
+                                    </dt>
+                                    <dd class="col-md-10">
+                                        @Html.DisplayFor(model => model.CatBed)
+                                    </dd>
+                                    <dt class="col-md-2">
+                                        @Html.DisplayNameFor(model => model.CatDescription) :
+                                    </dt>
+                                    <dd class="col-md-10">
+                                        @Html.DisplayFor(model => model.CatDescription)
+                                    </dd>
+                                    <dt class="col-md-2">
+                                        @Html.DisplayNameFor(model => model.CatPrice) :
+                                    </dt>
+                                    <dd class="col-md-10">
+                                        @Html.DisplayFor(model => model.CatPrice)
+                                    </dd>
+                                </dl>
+
+                                <form asp-action="DeleteCategory">
+                                    <input type="hidden" asp-for="CatId" />
+                                    <input type="submit" value="Delete" class="btn btn-danger" />
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <a asp-action="ViewCategory">Back to List</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+

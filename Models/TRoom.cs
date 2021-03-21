@@ -26,7 +26,7 @@ namespace RoomReservation.Models
         [Column("room_status", TypeName = "decimal(1, 0)")]
         public decimal RoomStatus { get; set; }
         [Column("cat_id")]
-        [StringLength(4)]
+        [StringLength(10)]
         public string CatId { get; set; }
 
         [ForeignKey(nameof(CatId))]

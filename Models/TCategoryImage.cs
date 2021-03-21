@@ -14,7 +14,7 @@ namespace RoomReservation.Models
     {
         [Key]
         [Column("cat_id")]
-        [StringLength(4)]
+        [StringLength(10)]
         public string CatId { get; set; }
         [Key]
         [Column("img_id")]

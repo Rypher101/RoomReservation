@@ -1,0 +1,106 @@
+﻿@model IEnumerable<RoomReservation.Models.TCategory>
+
+@{
+    ViewData["Title"] = "ViewCategory";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="card ">
+                    <div class="card-header ">
+                        <div class="row">
+                            <h4 class="card-title" style="padding-left:10px">Category</h4>
+                            <div class="col align-self-end" align="right">
+                                <a asp-action="NewCategory" style="padding-right:0"> Create New</a>
+                            </div>
+                        </div>
+                        <p style="color:darkgreen">@TempData["Message"]</p>
+                        <p style="color:red">@TempData["Error"]</p>
+                    </div>
+                    <div class="card-body ">
+                        <table class="table" id="myTable">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        ID
+                                        <br /><input type="text" style="width:fit-content()" class="form-control" id="txtID" onkeyup="FilterContent('txtID',0)"/>
+                                    </th>
+                                    <th>
+                                        Type
+                                        <br /><input type="text" style="width:fit-content()" class="form-control" id="txtType" onkeyup="FilterContent('txtType',1)"/>
+                                    </th>
+                                    <th>
+                                        Bed count
+                                        <br /><input type="number" style="width:fit-content()" class="form-control" id="txtBed" onchange="FilterContent('txtBed',2)"/>
+                                    </th>
+                                    <th>
+                                        Description
+                                        <br /><input type="text" style="width:fit-content()" class="form-control" id="txtDesc" onkeyup="FilterContent('txtDesc',3)"/>
+                                    </th>
+                                    <th>
+                                        Price
+                                        <br /><input type="number" style="width:fit-content()" class="form-control" id="txtPrice" onchange="FilterContent('txtPrice',4)"/>
+                                    </th>
+                                    <th><br />  </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CatId)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CatType)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CatBed)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CatDescription)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.CatPrice)
+                                        </td>
+                                        <td>
+                                            <a asp-action="EditCategory" asp-route-id="@item.CatId">Edit</a> &nbsp; | &nbsp;
+                                            <a asp-action="DetailsCategory" asp-route-id="@item.CatId">Details</a> &nbsp; | &nbsp;
+                                            <a asp-action="DeleteCategory" asp-route-id="@item.CatId">Delete</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+
+                        <script>
+                            function FilterContent(item,position) {
+                                var input, filter, table, tr, td, i, txtValue;
+                                input = document.getElementById(item);
+                                filter = input.value.toUpperCase();
+                                table = document.getElementById("myTable");
+                                tr = table.getElementsByTagName("tr");
+
+                                for (i = 0; i < tr.length; i++) {
+                                    td = tr[i].getElementsByTagName("td")[position];
+                                    if (td) {
+                                        txtValue = td.textContent || td.innerText;
+                                        if (txtValue.toUpperCase().search(filter) != -1) {
+                                            tr[i].style.display = "";
+                                        } else {
+                                            tr[i].style.display = "none";
+                                        }
+                                    }
+                                }
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

@@ -1,0 +1,64 @@
+﻿@model RoomReservation.Models.TCategory
+
+@{
+    ViewData["Title"] = "EditCategory";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="card ">
+                    <div class="card-header ">
+                        <div class="row">
+                            <h4 class="card-title" style="padding-left:10px">Edit Category</h4>
+                        </div>
+                        <p style="color:darkgreen">@TempData["Message"]</p>
+                        <p style="color:red">@TempData["Error"]</p>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row justify-content-md-center">
+                            <div class="col-md-4">
+                                <form asp-action="EditCategory">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <input type="hidden" asp-for="CatId"/>
+                                    <div class="form-group">
+                                        <label asp-for="CatType" class="control-label"></label>
+                                        <input asp-for="CatType" class="form-control" />
+                                        <span asp-validation-for="CatType" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="CatBed" class="control-label"></label>
+                                        <input asp-for="CatBed" class="form-control" />
+                                        <span asp-validation-for="CatBed" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="CatDescription" class="control-label"></label>
+                                        <input asp-for="CatDescription" class="form-control" />
+                                        <span asp-validation-for="CatDescription" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="CatPrice" class="control-label"></label>
+                                        <input asp-for="CatPrice" class="form-control" />
+                                        <span asp-validation-for="CatPrice" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="submit" value="Save" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div>
+                            <a asp-action="ViewCategory">Back to List</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
