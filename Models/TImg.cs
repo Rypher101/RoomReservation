@@ -12,19 +12,19 @@ namespace RoomReservation.Models
     [Table("t_img")]
     public partial class TImg
     {
-        public TImg()
-        {
-            TCategoryImage = new HashSet<TCategoryImage>();
-        }
-
         [Key]
         [Column("im_id")]
         public int ImId { get; set; }
         [Required]
         [Column("im_path", TypeName = "text")]
         public string ImPath { get; set; }
+        [Required]
+        [Column("cat_id")]
+        [StringLength(10)]
+        public string CatId { get; set; }
 
-        [InverseProperty("Img")]
-        public virtual ICollection<TCategoryImage> TCategoryImage { get; set; }
+        [ForeignKey(nameof(CatId))]
+        [InverseProperty(nameof(TCategory.TImg))]
+        public virtual TCategory Cat { get; set; }
     }
 }

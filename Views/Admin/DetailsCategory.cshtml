@@ -1,0 +1,87 @@
+﻿@model RoomReservation.Models.TCategory
+@{
+    ViewData["Title"] = "DetailsCategory";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="card ">
+                    <div class="card-header ">
+                        <div class="row">
+                            <h4 class="card-title" style="padding-left:10px">Category : @Html.DisplayFor(model => model.CatType) | @Html.DisplayFor(model => model.CatId)</h4>
+                        </div>
+                        <p style="color:darkgreen">@TempData["Message"]</p>
+                        <p style="color:red">@TempData["Error"]</p>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row justify-content-md-center">
+                            <div class="col">
+                                <dl class="row">
+                                    <dt class="col-sm-2">
+                                        @Html.DisplayNameFor(model => model.CatType) :
+                                    </dt>
+                                    <dd class="col-sm-10">
+                                        @Html.DisplayFor(model => model.CatType)
+                                    </dd>
+                                    <dt class="col-sm-2">
+                                        @Html.DisplayNameFor(model => model.CatBed) :
+                                    </dt>
+                                    <dd class="col-sm-10">
+                                        @Html.DisplayFor(model => model.CatBed)
+                                    </dd>
+                                    <dt class="col-sm-2">
+                                        @Html.DisplayNameFor(model => model.CatDescription) :
+                                    </dt>
+                                    <dd class="col-sm-10">
+                                        @Html.DisplayFor(model => model.CatDescription)
+                                    </dd>
+                                    <dt class="col-sm-2">
+                                        @Html.DisplayNameFor(model => model.CatPrice) :
+                                    </dt>
+                                    <dd class="col-sm-10">
+                                        @Html.DisplayFor(model => model.CatPrice)
+                                    </dd>
+                                </dl>
+                            </div>
+                        </div>
+                        <br />
+                        <form asp-action="FileUpload" id="formUpload" enctype="multipart/form-data">
+                            <div class="row">
+                                <h4 class="card-title" style="padding-left:10px">Category Images : </h4>
+                                <input type="file" id="catImg" name="catImg" accept="image/*" style="display:none" onchange="imgUpload()" />
+                                <input type="text" id="catID" name="catID" style="display:none" value="@Model.CatId" />
+                                <div class="col"><input type="button" value="Upload Image" class="btn btn-primary" onclick="imgOpen()" /></div>
+                            </div>
+                        </form>
+                        <br />
+                        
+                        <div>
+                            @foreach (var item in Model.TImg)
+                            {
+                            <a href="@Url.Action("DeleteImg", "Admin", new {id=item.ImId, catId = Model.CatId})"><img src="~/Image/@item.ImPath" height="300" width="400" /></a>
+                            }
+                        </div>
+                        <br />
+                        <div>
+                            <a asp-action="EditCategory" asp-route-id="@Model.CatId">Edit</a> &nbsp; | &nbsp; <a asp-action="ViewCategory">Back to List</a>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    function imgOpen() {
+        $("#catImg").trigger("click");
+    };
+
+    function imgUpload() {
+        $("#formUpload").submit();
+    }  
+</script>

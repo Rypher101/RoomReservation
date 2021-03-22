@@ -22,7 +22,6 @@ namespace RoomReservation.Data
         }
 
         public virtual DbSet<TCategory> TCategory { get; set; }
-        public virtual DbSet<TCategoryImage> TCategoryImage { get; set; }
         public virtual DbSet<TImg> TImg { get; set; }
         public virtual DbSet<TRate> TRate { get; set; }
         public virtual DbSet<TReservation> TReservation { get; set; }
@@ -42,32 +41,20 @@ namespace RoomReservation.Data
         {
             modelBuilder.Entity<TCategory>(entity =>
             {
-                entity.HasIndex(e => e.CatType)
-                    .HasName("IX_t_category")
-                    .IsUnique();
-
                 entity.Property(e => e.CatId).IsUnicode(false);
 
                 entity.Property(e => e.CatType).IsUnicode(false);
             });
 
-            modelBuilder.Entity<TCategoryImage>(entity =>
+            modelBuilder.Entity<TImg>(entity =>
             {
-                entity.HasKey(e => new { e.CatId, e.ImgId });
-
                 entity.Property(e => e.CatId).IsUnicode(false);
 
                 entity.HasOne(d => d.Cat)
-                    .WithMany(p => p.TCategoryImage)
+                    .WithMany(p => p.TImg)
                     .HasForeignKey(d => d.CatId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_t_category_image_t_category");
-
-                entity.HasOne(d => d.Img)
-                    .WithMany(p => p.TCategoryImage)
-                    .HasForeignKey(d => d.ImgId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_t_category_image_t_img");
+                    .HasConstraintName("FK_t_img_t_category");
             });
 
             modelBuilder.Entity<TRate>(entity =>
@@ -125,6 +112,7 @@ namespace RoomReservation.Data
                 entity.HasOne(d => d.Cat)
                     .WithMany(p => p.TRoom)
                     .HasForeignKey(d => d.CatId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_t_room_t_category");
             });
 
@@ -143,6 +131,8 @@ namespace RoomReservation.Data
                 entity.Property(e => e.UserPass)
                     .IsUnicode(false)
                     .IsFixedLength();
+
+                entity.Property(e => e.UserStatus).HasDefaultValueSql("((1))");
 
                 entity.Property(e => e.UserType).HasDefaultValueSql("((1))");
             });

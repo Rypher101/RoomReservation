@@ -14,33 +14,28 @@ namespace RoomReservation.Models
     {
         public TCategory()
         {
-            TCategoryImage = new HashSet<TCategoryImage>();
+            TImg = new HashSet<TImg>();
             TRoom = new HashSet<TRoom>();
         }
 
         [Key]
         [Column("cat_id")]
         [StringLength(10)]
-        [Display(Name ="Category ID")]
         public string CatId { get; set; }
         [Required]
         [Column("cat_type")]
         [StringLength(20)]
-        [Display(Name = "Category Type")]
         public string CatType { get; set; }
         [Column("cat_bed")]
-        [Display(Name = "Bed Count")]
         public int CatBed { get; set; }
         [Required]
         [Column("cat_description", TypeName = "text")]
-        [Display(Name = "Category Description")]
         public string CatDescription { get; set; }
         [Column("cat_price", TypeName = "decimal(12, 2)")]
-        [Display(Name = "Category Price")]
         public decimal CatPrice { get; set; }
 
         [InverseProperty("Cat")]
-        public virtual ICollection<TCategoryImage> TCategoryImage { get; set; }
+        public virtual ICollection<TImg> TImg { get; set; }
         [InverseProperty("Cat")]
         public virtual ICollection<TRoom> TRoom { get; set; }
     }
