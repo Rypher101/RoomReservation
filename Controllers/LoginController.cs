@@ -47,7 +47,11 @@ namespace RoomReservation.Controllers
                 HttpContext.Session.SetString("UType", (bool)user.UserType ? "C" : "A");
 
                 if ((bool)user.UserType) return RedirectToAction("Index", "Home");
-                else return RedirectToAction("Index", "Admin");
+                else
+                {
+                    ViewBag.User = true;
+                    return RedirectToAction("Index", "Admin");
+                }
             }
             catch (Exception)
             {

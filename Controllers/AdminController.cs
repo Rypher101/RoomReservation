@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 using RoomReservation.Data;
@@ -36,6 +37,7 @@ namespace RoomReservation.Controllers
             return View();
         }
 
+        #region Category
         public IActionResult ViewCategory()
         {
             SetDashboard(2);
@@ -204,7 +206,7 @@ namespace RoomReservation.Controllers
             _context.Add(imgModel);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("DetailsCategory", new { id = imgModel.CatId});
+            return RedirectToAction("DetailsCategory", new { id = imgModel.CatId });
         }
 
         public async Task<IActionResult> DeleteImg(int id, string catId)
@@ -212,7 +214,7 @@ namespace RoomReservation.Controllers
             var img = _context.TImg
                 .FirstOrDefault(im => im.ImId == id);
 
-            if(img != null)
+            if (img != null)
             {
                 string wwwRootPath = _hostEnvironment.WebRootPath;
                 string path = wwwRootPath + "\\Image\\" + img.ImPath;
@@ -229,7 +231,131 @@ namespace RoomReservation.Controllers
 
             return RedirectToAction("DetailsCategory", new { id = catId });
         }
+        #endregion
 
+        #region Room
+        public IActionResult ViewRoom()
+        {
+            SetDashboard(3);
+            List<TRoom> tRoom = (from rm in _context.TRoom
+                                 join rt in _context.TRate on rm.RoomId equals rt.RoomId into roomRate
+                                 from rr in roomRate.DefaultIfEmpty()
+                                 orderby rm.RoomId ascending
+                                 select rm).ToList();
+
+            List<TRoom> tRoomRes = (from rm in _context.TRoom
+                                    join rr in _context.TReservationRoom on rm.RoomId equals rr.RoomId 
+                                    join rs in _context.TReservation on rr.ResId equals rs.ResId 
+                                    orderby rm.RoomId ascending
+                                    select rm).ToList();
+
+            foreach (var item in tRoomRes)
+            {
+                foreach (var item2 in tRoom)
+                {
+                    if (item2.RoomId == item.RoomId && item2.RoomStatus == 1)
+                    {
+                        item2.RoomStatus = 2;
+                        break;
+                    }
+                    else if (item.RoomId > item2.RoomId)
+                    {
+                        break;
+                    }
+                }
+            }
+
+            return View(tRoom);
+        }
+
+        public IActionResult CreateRoom()
+        {
+            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CreateRoom([Bind("RoomId,RoomFloor,RoomStatus,CatId")] TRoom tRoom)
+        {
+            if (ModelState.IsValid)
+            {
+                _context.Add(tRoom);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId", tRoom.CatId);
+            return RedirectToAction(nameof(ViewRoom));
+        }
+
+        public async Task<IActionResult> EditRoom(decimal? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var tRoom = await _context.TRoom.FindAsync(id);
+            if (tRoom == null)
+            {
+                return NotFound();
+            }
+            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId", tRoom.CatId);
+            return View(tRoom);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditRoom(decimal id, [Bind("RoomId,RoomFloor,RoomStatus,CatId")] TRoom tRoom)
+        {
+            if (id != tRoom.RoomId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    tRoom.RoomStatus = Convert.ToInt16(tRoom.RoomStatus);
+                    _context.Update(tRoom);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.TRoom.Any(e => e.RoomId == id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(ViewRoom));
+            }
+            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId", tRoom.CatId);
+            return View(tRoom);
+        }
+
+        public async Task<IActionResult> DeleteRoom(decimal id)
+        {
+            var tRoom = new TRoom() { RoomId = id, RoomStatus = 0 };
+
+            _context.Entry(tRoom).Property("RoomStatus").IsModified = true;
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ViewRoom));
+        }
+
+        public async Task<IActionResult> ActiveRoom(decimal id)
+        {
+            var tRoom = new TRoom() { RoomId = id, RoomStatus = 1 };
+
+            _context.Entry(tRoom).Property("RoomStatus").IsModified = true;
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ViewRoom));
+        }
+        #endregion
         private void SetDashboard(int value)
         {
             switch (value)

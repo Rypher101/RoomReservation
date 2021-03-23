@@ -1,0 +1,161 @@
+﻿@model IEnumerable<RoomReservation.Models.TRoom>
+
+@{
+    ViewData["Title"] = "ViewRoom";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="card ">
+                    <div class="card-header ">
+                        <div class="row">
+                            <h4 class="card-title" style="padding-left:10px">Rooms</h4>
+                            <div class="col align-self-end" align="right">
+                                <a asp-action="CreateRoom" style="padding-right:0"> Create New</a>
+                            </div>
+                        </div>
+                        <p style="color:darkgreen">@TempData["Message"]</p>
+                        <p style="color:red">@TempData["Error"]</p>
+                    </div>
+                    <div class="card-body ">
+                        <table class="table" id="myTable">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        ID
+                                        <br /><input type="text" style="width:fit-content()" class="form-control" id="txtID" onkeyup="FilterContent('txtID',0)" />
+                                    </th>
+                                    <th>
+                                        Floor
+                                        <br /><input type="number" style="width:fit-content()" class="form-control" id="txtFloor" onchange="FilterContent('txtFloor',1)" />
+                                    </th>
+                                    <th>
+                                        Status
+                                        <br /><input type="text" style="width:fit-content()" class="form-control" id="txtStatus" onkeyup="FilterContent('txtStatus',2)" />
+                                    </th>
+                                    <th>
+                                        Category
+                                        <br /><input type="text" style="width:fit-content()" class="form-control" id="txtCategory" onkeyup="FilterContent('txtCategory',3)" />
+                                    </th>
+                                    <th>
+                                        Rating
+                                        <br /><input type="number" style="width:fit-content()" class="form-control" id="txtMin" onchange="FilterContentRate()" placeholder="Min" min="0" max="5"/>
+                                        <input type="number" style="width:fit-content()" class="form-control" id="txtMax" onchange="FilterContentRate()" placeholder="Max" min="0" max="5"/>
+                                    </th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                <tr>
+                                    <td>
+                                        @Convert.ToInt16(item.RoomId)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.RoomFloor)
+                                    </td>
+                                    <td>
+                                        @{
+                                            switch (item.RoomStatus)
+                                            {
+                                                case 0:
+                                                    <p>Out of order</p>
+                                                    break;
+                                                case 1:
+                                                    <p>Available</p>
+                                                    break;
+                                                case 2:
+                                                    <p>Occupied</p>
+                                                    break;
+                                            }
+
+                                        }
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.CatId)
+                                    </td>
+                                    <td>
+                                        @{
+                                            decimal rate = 0;
+                                            if (item.TRate.Count > 0)
+                                            {
+                                                foreach (var itemR in item.TRate)
+                                                {
+                                                    rate = rate + itemR.Rate;
+                                                }
+
+                                                rate = rate / item.TRate.Count();
+                                            }
+                                            <p>@rate</p>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-action="EditRoom" asp-route-id="@item.RoomId">Edit</a> &nbsp; | &nbsp;
+                                        @{
+                                            if (item.RoomStatus == 0)
+                                            {
+                                                <a asp-action="ActiveRoom" asp-route-id="@item.RoomId">Fixed</a>
+
+                                            }
+                                            else
+                                            {
+                                                <a asp-action="DeleteRoom" asp-route-id="@item.RoomId">Out of order</a>
+                                            }
+                                        }
+
+                                    </td>
+                                </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <script>
+                            function FilterContent(item, position) {
+                                var input, filter, table, tr, td, i, txtValue;
+                                input = document.getElementById(item);
+                                filter = input.value.toUpperCase();
+                                table = document.getElementById("myTable");
+                                tr = table.getElementsByTagName("tr");
+
+                                for (i = 0; i < tr.length; i++) {
+                                    td = tr[i].getElementsByTagName("td")[position];
+                                    if (td) {
+                                        txtValue = td.textContent || td.innerText;
+                                        if (txtValue.toUpperCase().search(filter) != -1) {
+                                            tr[i].style.display = "";
+                                        } else {
+                                            tr[i].style.display = "none";
+                                        }
+                                    }
+                                }
+                            }
+
+                            function FilterContentRate() {
+                                var min,max, table, tr, td, i, txtValue;
+                                min = document.getElementById("txtMin").value == null ? 0 : document.getElementById("txtMin").value;
+                                max = document.getElementById("txtMax").value == null ? 5 : document.getElementById("txtMax").value;
+
+                                table = document.getElementById("myTable");
+                                tr = table.getElementsByTagName("tr");
+                                for (i = 0; i < tr.length; i++) {
+                                    td = tr[i].getElementsByTagName("td")[4];
+                                    if (td) {
+                                        txtValue = parseInt(td.textContent || td.innerText);
+                                        if (txtValue >= min && txtValue <= max) {
+                                            tr[i].style.display = "";
+                                        } else {
+                                            tr[i].style.display = "none";
+                                        }
+                                    }
+                                }
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,54 @@
+﻿@model RoomReservation.Models.TRoom
+
+@{
+    ViewData["Title"] = "CreateRoom";
+    Layout = "~/Views/Shared/_LayoutAdmin.cshtml";
+}
+
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col">
+                <div class="card ">
+                    <div class="card-header ">
+                        <div class="row">
+                            <h4 class="card-title" style="padding-left:10px">New Room</h4>
+                        </div>
+                        <p style="color:darkgreen">@TempData["Message"]</p>
+                        <p style="color:red">@TempData["Error"]</p>
+                    </div>
+                    <div class="card-body ">
+                        <div class="row justify-content-md-center">
+                            <div class="col-md-4">
+                                <form asp-action="CreateRoom">
+                                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                                    <div class="form-group">
+                                        <label asp-for="RoomId" class="control-label">Room ID</label>
+                                        <input asp-for="RoomId" class="form-control" />
+                                        <span asp-validation-for="RoomId" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="RoomFloor" class="control-label">Room Floor</label>
+                                        <input asp-for="RoomFloor" class="form-control" />
+                                        <span asp-validation-for="RoomFloor" class="text-danger"></span>
+                                    </div>
+                                    <div class="form-group">
+                                        <label asp-for="CatId" class="control-label">Category ID</label>
+                                        <select asp-for="CatId" class="form-control" asp-items="ViewBag.CatId"></select>
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="submit" value="Create" class="btn btn-primary" />
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+
+                        <div>
+                            <a asp-action="ViewRoom">Back to List</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
