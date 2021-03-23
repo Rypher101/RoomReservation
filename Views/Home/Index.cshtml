@@ -52,10 +52,10 @@
                         <a href="#"><span>Reservations</span> <i class="bi bi-chevron-down"></i></a>
                         <ul>
                             <li><a href="@Url.Action("Category", "Home")" target="_blank">Make Reservation</a></li>
-                            <li><a href="#">Manage Reservations</a></li>
                             @if ((bool)TempData["User"] == true)
                             {
-                                <li><a class="nav-link scrollto" href="@Url.Action("Reservation", "Home")">Confirm Reservation</a></li>
+                                <li><a href="@Url.Action("ManageReservation","Home")">Manage Reservations</a></li>
+                                <li><a class="nav-link scrollto" href="@Url.Action("Reservation", "Home")" target="_blank">Confirm Reservation</a></li>
                             }
                         </ul>
                     </li>

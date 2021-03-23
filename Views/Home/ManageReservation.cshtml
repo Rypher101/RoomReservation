@@ -1,0 +1,64 @@
+﻿@model IEnumerable<RoomReservation.Models.TReservation>
+
+@{
+    ViewData["Title"] = "ManageReservation";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+}
+
+<section id="portfolio" class="portfolio" style="padding-top:10px">
+    <div class="container">
+        <div class="section-title">
+            <h2>Reservations</h2>
+            <div class="row justify-content-md-center">
+                <div class="col-md-6">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    ID
+                                </th>
+                                <th>
+                                    Date
+                                </th>
+                                <th>
+                                    Check In
+                                </th>
+                                <th>
+                                    Check Out
+                                </th>
+                                <th>
+                                    Status
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ResDate)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ResFrom)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ResTo)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.ResStatus)
+                                    </td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@item.ResId">Edit</a> |
+                                        <a asp-action="Details" asp-route-id="@item.ResId">Details</a> |
+                                        <a asp-action="Delete" asp-route-id="@item.ResId">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

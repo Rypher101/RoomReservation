@@ -1,0 +1,69 @@
+﻿@model RoomReservation.Models.TCategory
+
+@{
+    ViewData["Title"] = "DetailCategory";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+}
+
+<section id="portfolio" class="portfolio" style="padding-top:10px">
+    <div class="container">
+        <div class="section-title">
+            <h2>Category Details</h2>
+            <div class="row justify-content-md-center">
+                <div class="col-md-6">
+                    <div class="row justify-content-md-center">
+                        <div class="col">
+                            <dl class="row">
+                                <dt class="col-md-4" align="right">
+                                    @Html.DisplayNameFor(model => model.CatType) :
+                                </dt>
+                                <dd class="col-md-6" align="left">
+                                    @Html.DisplayFor(model => model.CatType)
+                                </dd>
+                                <dt class="col-md-4" align="right">
+                                    @Html.DisplayNameFor(model => model.CatBed) :
+                                </dt>
+                                <dd class="col-md-6" align="left">
+                                    @Html.DisplayFor(model => model.CatBed)
+                                </dd>
+                                <dt class="col-md-4" align="right">
+                                    @Html.DisplayNameFor(model => model.CatDescription) :
+                                </dt>
+                                <dd class="col-md-6" align="left">
+                                    @Html.DisplayFor(model => model.CatDescription)
+                                </dd>
+                                <dt class="col-md-4" align="right">
+                                    @Html.DisplayNameFor(model => model.CatPrice) :
+                                </dt>
+                                <dd class="col-md-6" align="left">
+                                    @Html.DisplayFor(model => model.CatPrice)
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                    <br />
+                    <div>
+                        <div class="row portfolio-container">
+                            @foreach (var item in Model.TImg)
+                            {
+
+                                <div class="col-lg-4 col-md-6 portfolio-item filter-app">
+                                    <div class="portfolio-wrap">
+                                        <img src="~/Image/@item.ImPath" class="img-fluid" alt="" height="300" width="400">
+                                        <div class="portfolio-info">
+                                            <div class="portfolio-links">
+                                                <a href="~/Image/@item.ImPath" data-gallery="portfolioGallery" class="portfolio-lightbox"><i class="bx bx-plus"></i></a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            }
+                        </div>
+                        <input type="button" name="name" value="Back" onclick="location.href = '@Url.Action("Category", "Home")'" class="btn btn-success"/>
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

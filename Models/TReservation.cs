@@ -20,6 +20,7 @@ namespace RoomReservation.Models
         [Key]
         [Column("res_id")]
         public int ResId { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [Column("res_date", TypeName = "date")]
         public DateTime ResDate { get; set; }
         [Column("res_from", TypeName = "date")]

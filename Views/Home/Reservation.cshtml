@@ -1,0 +1,72 @@
+﻿@model IEnumerable<RoomReservation.Models.TRoom>
+
+@{
+    ViewData["Title"] = "Reservation";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+}
+
+<section id="portfolio" class="portfolio" style="padding-top:10px">
+    <div class="container">
+        <div class="section-title">
+            <h2>Reservation</h2>
+            <div class="row justify-content-md-center">
+                <div class="col-md-6">
+                    <label class="form-control"><b>Check in date:</b>  @ViewBag.dateFrom</label><br />   
+                    <label class="form-control"><b>Check out date:</b> @ViewBag.dateTo</label><br />
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Room ID
+                                </th>
+                                <th>
+                                    Floor
+                                </th>
+                                <th>
+                                    Category
+                                </th>
+                                <th>
+                                    Bed count
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ decimal total = 0;}
+                            @foreach (var item in Model)
+                            {
+                                total += item.Cat.CatPrice;
+                                <tr>
+                                    <td>
+                                        @decimal.ToInt16(item.RoomId)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.RoomFloor)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Cat.CatType)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Cat.CatBed)
+                                    </td>
+                                    <td align="right">
+                                        @Html.DisplayFor(modelItem => item.Cat.CatPrice)
+                                    </td>
+                                </tr>
+                            }
+                            <tr >
+                                <td colspan="4" align="right">
+                                    <b>Total: </b>
+                                </td>
+                                <td align="right">
+                                    Rs: @total
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <input type="button" class="btn btn-success" onclick="location.href = '@Url.Action("MakeReservation", "Home")'" value="Make reservation"/>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

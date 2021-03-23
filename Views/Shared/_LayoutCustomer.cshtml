@@ -46,7 +46,11 @@
                     {
                         <li><a class="getstarted scrollto" href="@Url.Action("Index", "Login")">Log in</a></li>
                     }
- 
+                    else
+                    {
+                        <li><a class="nav-link scrollto" href="@Url.Action("Reservation", "Home")" target="_blank">Confirm Reservation</a></li>
+                    }
+
 
                 </ul>
             </nav>

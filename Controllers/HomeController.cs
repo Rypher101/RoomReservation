@@ -96,6 +96,7 @@ namespace RoomReservation.Controllers
                 {
                     roomList.Add(newRoom);
                     HttpContext.Session.SetString("rooms", JsonConvert.SerializeObject(roomList));
+                    HttpContext.Session.SetInt32("pending", 1);
                 }
                 else
                 {
@@ -158,10 +159,106 @@ namespace RoomReservation.Controllers
         }
         public IActionResult Reservation()
         {
-            return null;
+            if (HttpContext.Session.GetInt32("pending") != 1)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var listRoom = JsonConvert.DeserializeObject<List<TRoom>>(HttpContext.Session.GetString("rooms"));
+            ViewBag.dateFrom = DateTime.Parse(HttpContext.Session.GetString("resFrom")).ToString("yyyy - MMMM - dd");
+            ViewBag.dateTo = DateTime.Parse(HttpContext.Session.GetString("resTo")).ToString("yyyy - MMMM - dd");
+
+            if (listRoom.Count()<1)
+            {
+                return RedirectToAction(nameof(Category));
+            }
+
+            var rooms = _context.TRoom
+                .Include(x => x.Cat)
+                .Where(y => listRoom.Select(z => z.RoomId).Contains(y.RoomId)).ToList();
+
+            return View(rooms);
+        }
+
+        public async System.Threading.Tasks.Task<IActionResult> MakeReservation()
+        {
+            if (HttpContext.Session.GetInt32("pending") != 1)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            var dateFrom = DateTime.Parse(HttpContext.Session.GetString("resFrom"));
+            var dateTo = DateTime.Parse(HttpContext.Session.GetString("resTo"));
+            var uid = HttpContext.Session.GetInt32("UID");
+
+            var tRes = new TReservation { ResFrom = dateFrom, ResTo = dateTo, UserId = uid };
+
+            _context.Add(tRes);
+            if (await _context.SaveChangesAsync() > 0)
+            {
+                int resId = _context.TReservation.Max(x => x.ResId);
+                var listRoom = JsonConvert.DeserializeObject<List<TRoom>>(HttpContext.Session.GetString("rooms"));
+                var resRoom = new List<TReservationRoom>();
+
+                foreach (var item in listRoom)
+                {
+                    var temp = new TReservationRoom { ResId = resId, RoomId = decimal.ToInt16(item.RoomId) };
+                    resRoom.Add(temp);
+                }
+
+                _context.TReservationRoom.AddRange(resRoom);
+                if (await _context.SaveChangesAsync() > 0)
+                {
+                    HttpContext.Session.SetInt32("pending", 0);
+                    return RedirectToAction(nameof(Complete));
+                }
+                
+            }
+
+            TempData["Error"] = "Unable to create the reservation. Please try again";
+            return RedirectToAction(nameof(Reservation));
+        }
+
+        public IActionResult Complete()
+        {
+            return View();
+        }
+
+        public IActionResult DetailCategory(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var tCategory = _context.TCategory
+                .Where(cat => cat.CatId == id)
+                .Include(ic => ic.TImg)
+                .FirstOrDefault();
+
+            if (tCategory == null)
+            {
+                return NotFound();
+            }
+
+            return View(tCategory);
         }
 
         public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        public IActionResult ManageReservation()
+        {
+            var uid = HttpContext.Session.GetInt32("UID");
+            var tRes = _context.TReservation
+                .Where(x => x.UserId == uid).ToList();
+
+            return View(tRes);
+        }
+
+        public IActionResult DetailReservation()
         {
             return View();
         }
