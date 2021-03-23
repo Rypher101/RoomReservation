@@ -2184,6 +2184,7 @@ progress {
 .form-control::-webkit-date-and-time-value {
   height: 1.5em;
 }
+
 .form-control::-webkit-input-placeholder {
   color: #6c757d;
   opacity: 1;

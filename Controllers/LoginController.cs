@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.EntityFrameworkCore;
 using RoomReservation.Data;
 using RoomReservation.Models;
@@ -21,7 +22,8 @@ namespace RoomReservation.Controllers
         // GET: Login
         public IActionResult Index()
         {
-            HttpContext.Session.Clear();
+            HttpContext.Session.SetInt32("UID", -1);
+            HttpContext.Session.SetString("UType", "");
             return View();
         }
 
@@ -46,12 +48,11 @@ namespace RoomReservation.Controllers
                 HttpContext.Session.SetInt32("UID", user.UserId);
                 HttpContext.Session.SetString("UType", (bool)user.UserType ? "C" : "A");
 
-                if ((bool)user.UserType) return RedirectToAction("Index", "Home");
-                else
-                {
-                    ViewBag.User = true;
-                    return RedirectToAction("Index", "Admin");
+                if ((bool)user.UserType) 
+                { 
+                    return RedirectToAction("Index", "Home"); 
                 }
+                else return RedirectToAction("Index", "Admin");
             }
             catch (Exception)
             {

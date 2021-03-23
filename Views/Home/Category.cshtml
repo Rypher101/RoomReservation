@@ -1,0 +1,92 @@
+﻿@model IEnumerable<RoomReservation.Models.TCategory>
+
+@{
+    ViewData["Title"] = "Category";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+}
+
+<section id="portfolio" class="portfolio" style="padding-top:10px">
+    <div class="container">
+        <div class="section-title" style="@ViewBag.Prv">
+            <h2>Select Dates</h2>
+            <div class="row justify-content-md-center">
+                <div class="col-md-6">
+                    <form asp-action="Rooms" id="form1">
+                        @{ 
+                            string from = "";
+                            string to = "";
+
+                            if (ViewBag.From != null)
+                            {
+                                from = ViewBag.From.ToString("yyyy-MM-dd");
+                                to = ViewBag.To.ToString("yyyy-MM-dd");
+                            }
+                        }
+                        <label>Check in: </label><input type="date" id="resFrom" name="resFrom" class="form-control" placeholder="dd-mm-yyyy" style="display:inline;" required min="@ViewBag.Min" value="@from">
+                        <br /><br />
+                        <label>Check out: </label><input type="date" id="resTo" name="resTo" class="form-control" style="display: inline;" required min="@ViewBag.Min" value="@to">
+                        <input type="text" id="catID" name="catID" style="display:none" required />
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">
+            <h2>Select A Category</h2>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-12 d-flex justify-content-center">
+                <ul id="portfolio-flters">
+                    <li data-filter="*" class="filter-active">All</li>
+
+                    @{ var catType = Model.Select(x => x.CatType).Distinct().ToList();
+                        foreach (var item in catType)
+                        {
+                            <li data-filter=".filter-@item.Replace(" ", "")">@item</li>
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+
+        <div class="row portfolio-container">
+            @foreach (var category in Model)
+            {
+                @foreach (var img in category.TImg)
+                {
+                    <div class="col-lg-4 col-md-6 portfolio-item filter-@category.CatType.Replace(" ","")">
+                        <div class="portfolio-wrap" style="width:400px; height:300px">
+                            <img src="~/Image/@img.ImPath" class="img-fluid" alt="" width="400" height="300">
+                            <div class="portfolio-info">
+                                <h4>@category.CatType | Beds: @category.CatBed</h4>
+                                <div class="portfolio-links">
+                                    <a onclick="submitRoom('@category.CatId')" title="Select this category"><i class="bx bx-plus"></i></a>
+                                    <a href="@Url.Action("DetailCategory", "Home",new {id = category.CatId })" title="More Details"><i class="bx bx-link"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    break;
+                }
+            }
+
+        </div>
+
+    </div>
+</section>
+<script>
+    function submitRoom(id) {
+        var from = document.getElementById("resFrom").value;
+        var to = document.getElementById("resTo").value;
+        if (from != "" && to != "") {
+            document.getElementById("catID").value = id;
+            document.getElementById("form1").submit();
+        } else {
+            alert("Please enter date that you want to check in and checkout");
+        }
+        
+
+    }
+</script>
+

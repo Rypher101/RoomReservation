@@ -1,0 +1,88 @@
+﻿@model IEnumerable<RoomReservation.Models.TRoom>
+
+@{
+    ViewData["Title"] = "Rooms";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+}
+
+<section id="portfolio" class="portfolio" style="padding-top:10px">
+    <div class="container">
+        <div class="section-title">
+            <h2>Select Room</h2>
+            <div class="row justify-content-md-center">
+                <div class="col-md-6">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Room ID
+                                </th>
+                                <th>
+                                    Floor
+                                </th>
+                                <th>
+                                    Rate
+                                </th>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                            <tr>
+                                <td>
+                                    @decimal.ToInt16(item.RoomId)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.RoomFloor)
+                                </td>
+                                <td>
+                                    @{
+                                        decimal rate = 0;
+                                        foreach (var r in item.TRate)
+                                        {
+                                            rate += r.Rate;
+                                        }
+
+                                        if (item.TRate.Count() > 0)
+                                        {
+                                            rate = rate / item.TRate.Count();
+                                            @rate
+                                        }
+                                        else
+                                        {
+                                    <p>Not rated</p>
+                                        }
+
+                                    }
+                                </td>
+                                <td>
+                                    @if (item.RoomStatus == 1)
+                                    {
+                                        <a asp-action="Rooms" asp-route-id="@item.RoomId">Select</a>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="RemoveRoom" asp-route-id="@item.RoomId">Remove</a>
+                                    }
+
+
+
+
+                                    @if(item.TRate.Count()>0)
+                                    {
+                                    <p>&nbsp; | &nbsp;<a asp-action="DetailsRooms" asp-route-id="@item.RoomId">Reviews</a></p>
+                                    }
+
+                                </td>
+                            </tr>
+                            }
+                        </tbody>
+                    </table>
+                    <input type="button" class="btn btn-success" value="Select another category" onclick="location.href='@Url.Action("Category","Home")'">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

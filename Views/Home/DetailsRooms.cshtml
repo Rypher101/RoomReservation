@@ -1,0 +1,49 @@
+﻿@model IEnumerable<RoomReservation.Models.TRate>
+
+@{
+    ViewData["Title"] = "DetailsRooms";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+}
+
+<section id="portfolio" class="portfolio" style="padding-top:10px">
+    <div class="container">
+        <div class="section-title">
+            <h2>Room : @Model.ElementAt(0).RoomId</h2>
+            <div class="row justify-content-md-center">
+                <div class="col-md-6">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>
+                                    User Name
+                                </th>
+                                <th>
+                                    Rate
+                                </th>
+                                <th>
+                                    Review
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.User.UserName)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Rate)
+                                    </td>
+                                    <td>
+                                        @Html.DisplayFor(modelItem => item.Review)
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
