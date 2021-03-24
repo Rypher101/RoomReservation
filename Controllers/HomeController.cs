@@ -50,14 +50,49 @@ namespace RoomReservation.Controllers
                 .Include(ic => ic.TImg)
                 .ToList();
 
+            if (HttpContext.Session.GetInt32("UID") != -1 && HttpContext.Session.GetInt32("UID") != null)
+            {
+                var recom = (from res in _context.TReservation
+                            where res.UserId == HttpContext.Session.GetInt32("UID")
+                            join rr in _context.TReservationRoom on res.ResId equals rr.ResId
+                            join rm in _context.TRoom on rr.RoomId equals rm.RoomId
+                            join cat in _context.TCategory on rm.CatId equals cat.CatId
+                            select new
+                            {
+                                cat
+                            }).ToList();
+
+                if (recom.Count()>0)
+                {
+                    var dict = new Dictionary<string, int>();
+                    foreach (var item in recom)
+                    {
+                        if (dict.ContainsKey(item.cat.CatType))
+                        {
+                            int val = dict[item.cat.CatType];
+                            dict[item.cat.CatType] = val + 1;
+                        }
+                        else
+                        {
+                            dict.Add(item.cat.CatType, 1);
+                        }
+                    }
+
+                    ViewBag.Recom = dict.Aggregate((x, y) => x.Value > y.Value ? x : y).Key;
+                    ViewBag.RecVal = dict.Values.Max();
+                }
+            }
+            
+
             ViewBag.Min = DateTime.Today.ToString("yyyy-MM-dd");
 
             HttpContext.Session.SetString("catID", "");
-            if (HttpContext.Session.GetString("resFrom") != null)
+            ViewBag.Pending = HttpContext.Session.GetInt32("pending");
+
+            if (ViewBag.Pending == 1)
             {
                 ViewBag.From = DateTime.Parse(HttpContext.Session.GetString("resFrom"));
-                ViewBag.To = DateTime.Parse(HttpContext.Session.GetString("resTo"));
-                ViewBag.Prv = "display:none;";
+                ViewBag.To = DateTime.Parse(HttpContext.Session.GetString("resTo")); 
             }
 
             return View(tCategory);
@@ -70,7 +105,7 @@ namespace RoomReservation.Controllers
             string catID;
             List<TRoom> roomList = new List<TRoom>();
 
-            if (HttpContext.Session.GetString("rooms") != null)
+            if (HttpContext.Session.GetInt32("pending") == 1)
             {
                 roomList = JsonConvert.DeserializeObject<List<TRoom>>(HttpContext.Session.GetString("rooms"));
             }
@@ -92,7 +127,7 @@ namespace RoomReservation.Controllers
                 catID = HttpContext.Session.GetString("resCat");
 
                 var newRoom = new TRoom { RoomId = id, CatId = catID };
-                if (HttpContext.Session.GetString("rooms") == null)
+                if (HttpContext.Session.GetInt32("pending") != 1)
                 {
                     roomList.Add(newRoom);
                     HttpContext.Session.SetString("rooms", JsonConvert.SerializeObject(roomList));
@@ -113,7 +148,7 @@ namespace RoomReservation.Controllers
                 .Where(x => x.CatId == catID.ToString() &&
                     !_context.TReservationRoom
                         .Include(res => res.Res)
-                        .Where(res => res.Res.ResFrom >= dtFrom && res.Res.ResTo <= dtTo)
+                        .Where(res => (res.Res.ResFrom >= dtFrom && res.Res.ResFrom <= dtTo) || (res.Res.ResFrom <= dtFrom && res.Res.ResTo >= dtTo))
                         .Select(res => res.RoomId)
                     .Contains(x.RoomId) &&
                     x.RoomStatus == 1)
@@ -253,15 +288,99 @@ namespace RoomReservation.Controllers
         {
             var uid = HttpContext.Session.GetInt32("UID");
             var tRes = _context.TReservation
-                .Where(x => x.UserId == uid).ToList();
+                .Where(x => x.UserId == uid)
+                .OrderBy(x=>x.ResTo)
+                .ToList();
 
             return View(tRes);
         }
 
-        public IActionResult DetailReservation()
+        public IActionResult ClearReservation(int id)
         {
-            return View();
+            HttpContext.Session.SetInt32("pending", 0);
+            if (id == 1)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            else
+            {
+                return RedirectToAction(nameof(Category));
+            }
+            
         }
+        public IActionResult DetailsReservation(int id)
+        {
+            var tRes = _context.TReservation
+                .Include(x => x.TReservationRoom)
+                .ThenInclude(y => y.Room)
+                .Where(w => w.ResId == id)
+                .ToList();
+
+            return View(tRes);
+        }
+
+        public async System.Threading.Tasks.Task<IActionResult> Review(IFormCollection collection)
+        {
+            var tRate = new List<TRate>();
+            int resID;
+            int uid = (int)HttpContext.Session.GetInt32("UID");
+
+            foreach (KeyValuePair<string, Microsoft.Extensions.Primitives.StringValues> item in collection)
+            {
+                if (item.Key == "resID")
+                {
+                    resID = int.Parse(item.Value);
+                    continue;
+                }
+
+                var temp = new TRate { UserId = uid};
+                bool exist = false;
+
+                if (item.Key.Contains("rate"))
+                {
+                    temp.RoomId = int.Parse(item.Key.Split("-")[0]);
+                    if (item.Value != "")
+                    {
+                        temp.Rate = int.Parse(item.Value);
+                        exist = true;
+                    }
+
+                    string key = temp.RoomId.ToString() + "-review";
+                    if (collection[key] != "")
+                    {
+                        exist = true;
+                        temp.Review = collection[key];
+                    }
+
+                    if (exist)
+                    {
+                        tRate.Add(temp);
+                    }
+
+                }
+            }
+
+            if (tRate.Count>0)
+            {
+                var prvRate = _context.TRate
+                    .Where(x => x.UserId == uid && tRate.Select(y=>y.RoomId).Contains(x.RoomId)).ToList();
+
+                var newRate = tRate.Where(x => !prvRate.Any(y => y.RoomId == x.RoomId)).ToList();
+                _context.TRate.AddRange(newRate);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(ManageReservation));
+        }
+        public IActionResult CompleteReservation(int id)
+        {
+            var tRes = new TReservation { ResId = id, ResStatus = 1 };
+            _context.TReservation.Attach(tRes);
+            _context.Entry(tRes).Property(x => x.ResStatus).IsModified = true;
+            _context.SaveChanges();
+
+            return RedirectToAction(nameof(ManageReservation));
+        }
+
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

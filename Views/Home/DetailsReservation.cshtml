@@ -1,0 +1,93 @@
+﻿@model IEnumerable<RoomReservation.Models.TReservation>
+
+@{
+    ViewData["Title"] = "DetailsReservation";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+}
+
+<section id="portfolio" class="portfolio" style="padding-top:10px">
+    <div class="container">
+        <div class="section-title">
+            <h2>Reservation details</h2>
+            <div class="row justify-content-md-center">
+                <div class="col-md-6">
+                    <label class="form-control">Reservation ID: @Model.ElementAt(0).ResId</label>
+                    <label class="form-control">Made Date: @Model.ElementAt(0).ResDate.ToString("yyyy - MMM - dd")</label>
+                    <label class="form-control">Check In: @Model.ElementAt(0).ResFrom.ToString("yyyy - MMM - dd")</label>
+                    <label class="form-control">Check Out: @Model.ElementAt(0).ResTo.ToString("yyyy - MMM - dd")</label>
+                    <label class="form-control">Status: 
+                    @{var str = "";
+                        if (Model.ElementAt(0).ResStatus == 1)
+                        {
+                            str = "Complted";
+                        }
+                        else
+                        {
+                            str = "Pendng";
+                        }
+                        @str
+                    }
+                    </label>
+                    <form asp-action="Review">
+                        <input type="hidden" name="resID" value="@Model.ElementAt(0).ResId" />
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        Room ID
+                                    </th>
+                                    <th>
+                                        Floor
+                                    </th>
+                                    <th>
+                                        Category
+                                    </th>
+                                    @if (Model.ElementAt(0).ResStatus == 1)
+                                    {
+                                        <th>
+                                            Rate
+                                        </th>
+                                        <th>
+                                            Review
+                                        </th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                @foreach (var item in Model.ElementAt(0).TReservationRoom)
+                                {
+                                    <tr>
+                                        <td>
+                                            @item.Room.RoomId
+                                        </td>
+                                        <td>
+                                            @item.Room.RoomFloor
+                                        </td>
+                                        <td>
+                                            @item.Room.CatId
+                                        </td>
+                                        @if (Model.ElementAt(0).ResStatus == 1)
+                                        {
+                                            <td>
+                                                <input type="number" name="@item.Room.RoomId-rate" min="0" max="5" class="form-control" />
+                                            </td>
+                                            <td>
+                                                <input type="text" name="@item.Room.RoomId-review" class="form-control" />
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                        @if (Model.ElementAt(0).ResStatus == 1)
+                        {
+                            <input type="submit" class="btn btn-success" />
+                        }
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

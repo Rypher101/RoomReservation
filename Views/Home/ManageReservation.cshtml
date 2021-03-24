@@ -10,7 +10,7 @@
         <div class="section-title">
             <h2>Reservations</h2>
             <div class="row justify-content-md-center">
-                <div class="col-md-6">
+                <div class="col-md">
                     <table class="table">
                         <thead>
                             <tr>
@@ -37,21 +37,40 @@
                             {
                                 <tr>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.ResDate)
+                                        @Html.DisplayFor(modelItem => item.ResId)
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.ResFrom)
+                                        @item.ResDate.ToString("yyyy - MMM - dd")
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.ResTo)
+                                        @item.ResFrom.ToString("yyyy - MMM - dd")
                                     </td>
                                     <td>
-                                        @Html.DisplayFor(modelItem => item.ResStatus)
+                                        @item.ResTo.ToString("yyyy - MMM - dd")
                                     </td>
                                     <td>
-                                        <a asp-action="Edit" asp-route-id="@item.ResId">Edit</a> |
-                                        <a asp-action="Details" asp-route-id="@item.ResId">Details</a> |
-                                        <a asp-action="Delete" asp-route-id="@item.ResId">Delete</a>
+                                        @{
+                                            string st = "";
+                                            if (item.ResStatus == 0)
+                                            {
+                                                st = "Pending";
+                                            }
+                                            else
+                                            {
+                                                st = "Complete";
+                                            }
+                                            @st
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-action="DetailsReservation" asp-route-id="@item.ResId">Details</a>
+                                        @{ var x = " | ";
+                                            if (item.ResStatus == 0 && item.ResFrom < DateTime.Today)
+                                            {
+                                                @x
+                                                <a asp-action="CompleteReservation" asp-route-id="@item.ResId">Complete</a>
+                                            }
+                                        }
                                     </td>
                                 </tr>
                             }

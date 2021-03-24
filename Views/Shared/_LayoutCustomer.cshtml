@@ -42,6 +42,7 @@
             <h1 class="logo"><a href="index.html">LEASURE HEAVEN</a></h1>
             <nav id="navbar" class="navbar">
                 <ul>
+                    <li><a class="nav-link scrollto" href="@Url.Action("Index", "Home")">Home</a></li>
                     @if ((bool)TempData["User"] == false)
                     {
                         <li><a class="getstarted scrollto" href="@Url.Action("Index", "Login")">Log in</a></li>
@@ -49,8 +50,8 @@
                     else
                     {
                         <li><a class="nav-link scrollto" href="@Url.Action("Reservation", "Home")" target="_blank">Confirm Reservation</a></li>
+                        <li><a class="nav-link scrollto" href="@Url.Action("ClearReservation", "Home")" target="_blank">Clear Reservation</a></li>
                     }
-
 
                 </ul>
             </nav>

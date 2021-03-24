@@ -35,6 +35,78 @@ namespace RoomReservation.Controllers
             }
 
             SetDashboard(1);
+            var dict1 = new Dictionary<DateTime, int>();
+            var dict2 = new Dictionary<string, int>();
+
+            var c1 = _context.TReservation
+                .Include(x => x.TReservationRoom)
+                .ThenInclude(y => y.Room)
+                .ToList();
+
+            var c2 = _context.TCategory.ToDictionary(x=> x.CatId, x=>x.CatBed);
+
+            foreach (var item in c1)
+            {
+                var key = new DateTime(item.ResDate.Year, item.ResDate.Month, 1);
+
+                if (dict1.ContainsKey(key))
+                {
+                    int val = dict1[key];
+                    foreach (var item2 in item.TReservationRoom)
+                    {
+                        val += c2[item2.Room.CatId];
+                    }
+                    dict1[key] = val;
+                }
+                else
+                {
+                    int val = 0;
+                    foreach (var item2 in item.TReservationRoom)
+                    {
+                        val += c2[item2.Room.CatId];
+                    }
+                    dict1.Add(key, val);
+                }
+            }
+
+            foreach (var item in c1)
+            {
+                foreach (var item2 in item.TReservationRoom)
+                {
+                    var key = item2.Room.CatId;
+
+                    if (dict2.ContainsKey(key))
+                    {
+                        int val = dict2[key] + 1;
+                        dict2[key] = val;
+                    }
+                    else
+                    {
+                        dict2.Add(key, 1);
+                    }
+                }
+                
+            }
+
+            var ch1 = new List<C1>();
+            var ch2 = new List<C2>();
+            var total = dict2.Skip(1).Sum(x=>x.Value);
+
+            foreach (var item in dict1)
+            {
+                var temp = new C1 { date = item.Key, val = item.Value };
+                ch1.Add(temp);
+            }
+
+            foreach (var item in dict2)
+            {
+                var temp = new C2 { key = item.Key, val = item.Value*100/total };
+                ch2.Add(temp);
+            }
+
+            ViewBag.C1 = ch1;
+            ViewBag.C2 = ch2;
+
             return View();
         }
 
