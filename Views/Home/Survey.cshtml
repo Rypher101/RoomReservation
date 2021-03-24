@@ -1,0 +1,55 @@
+﻿@model RoomReservation.Models.TSurvey
+
+@{
+    ViewData["Title"] = "Survey";
+    Layout = "~/Views/Shared/_LayoutCustomer.cshtml";
+}
+
+<section id="portfolio" class="portfolio" style="padding-top:10px">
+    <div class="container">
+        <div class="section-title">
+            <h2>Survey</h2>
+            <div class="row justify-content-md-center">
+                <div class="col-md-6">
+                    <form asp-action="CreateSurvey">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-group">
+                            <label asp-for="SurRoom" class="control-label">Room Qulity: </label>
+                            <input asp-for="SurRoom" class="form-control" min="0" max="5"/>
+                            <span asp-validation-for="SurRoom" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="SurRoomService" class="control-label">Room Service Qulity: </label>
+                            <input asp-for="SurRoomService" class="form-control" min="0" max="5"/>
+                            <span asp-validation-for="SurRoomService" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="SurService" class="control-label">Overral Service Qulity: </label>
+                            <input asp-for="SurService" class="form-control" min="0" max="5"/>
+                            <span asp-validation-for="SurService" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="SurPrice" class="control-label">Price Satisfaction: </label>
+                            <input asp-for="SurPrice" class="form-control" min="0" max="5"/>
+                            <span asp-validation-for="SurPrice" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="SurFood" class="control-label">Food Qulity: </label>
+                            <input asp-for="SurFood" class="form-control" min="0" max="5"/>
+                            <span asp-validation-for="SurFood" class="text-danger"></span>
+                        </div>
+                        <div class="form-group" style="display:none">
+                            <label asp-for="ResId" class="control-label"></label>
+                            <input asp-for="ResId" class="form-control" value="@ViewBag.ResId"/>
+                        </div>
+                        <br />
+                        <div class="form-group">
+                            <input type="submit" value="Submit" class="btn btn-success" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+            </div>
+        </div>
+    </section>
+

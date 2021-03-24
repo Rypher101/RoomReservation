@@ -23,24 +23,35 @@ namespace RoomReservation.Controllers
         {
             _context = context;
             _logger = logger;
-            
+
         }
 
         public IActionResult Index()
         {
-            var cus = from rs in _context.TReservations
-                      join rr in _context.TReservationRooms on rs.ResId equals rr.ResId
-                      join rm in _context.TRooms on rr.RoomId equals rm.RoomId
-                      join cat in _context.TCategories on rm.CatId equals cat.CatId
-                      group cat by cat.CatId into bdCount
-                      select new
-                      {
-                          customers = bdCount.Sum(x => x.CatBed)
-                      };
+            var c1 = _context.TReservations
+                .Include(x => x.TReservationRooms)
+                .ThenInclude(y => y.Room)
+                .ToList();
 
-            var reservations = (from res in _context.TReservations
-                                where res.ResStatus == 1 && res.ResTo > DateTime.Today
-                                select res).Count();
+            var c2 = _context.TCategories.ToDictionary(x => x.CatId, x => x.CatBed);
+            int tot = 0;
+            int resv = 0;
+            foreach (var item in c1)
+            {
+                if (item.ResStatus != 1)
+                {
+                    continue;
+                }
+                resv++;
+
+                foreach (var item2 in item.TReservationRooms)
+                {
+                    tot += c2[item2.Room.CatId];
+                }
+            }
+
+            ViewBag.Customer = tot;
+            ViewBag.Res = resv;
             return View();
         }
 
@@ -53,16 +64,16 @@ namespace RoomReservation.Controllers
             if (HttpContext.Session.GetInt32("UID") != -1 && HttpContext.Session.GetInt32("UID") != null)
             {
                 var recom = (from res in _context.TReservations
-                            where res.UserId == HttpContext.Session.GetInt32("UID")
-                            join rr in _context.TReservationRooms on res.ResId equals rr.ResId
-                            join rm in _context.TRooms on rr.RoomId equals rm.RoomId
-                            join cat in _context.TCategories on rm.CatId equals cat.CatId
-                            select new
-                            {
-                                cat
-                            }).ToList();
+                             where res.UserId == HttpContext.Session.GetInt32("UID")
+                             join rr in _context.TReservationRooms on res.ResId equals rr.ResId
+                             join rm in _context.TRooms on rr.RoomId equals rm.RoomId
+                             join cat in _context.TCategories on rm.CatId equals cat.CatId
+                             select new
+                             {
+                                 cat
+                             }).ToList();
 
-                if (recom.Count()>0)
+                if (recom.Count() > 0)
                 {
                     var dict = new Dictionary<string, int>();
                     foreach (var item in recom)
@@ -82,7 +93,7 @@ namespace RoomReservation.Controllers
                     ViewBag.RecVal = dict.Values.Max();
                 }
             }
-            
+
 
             ViewBag.Min = DateTime.Today.ToString("yyyy-MM-dd");
 
@@ -92,7 +103,7 @@ namespace RoomReservation.Controllers
             if (ViewBag.Pending == 1)
             {
                 ViewBag.From = DateTime.Parse(HttpContext.Session.GetString("resFrom"));
-                ViewBag.To = DateTime.Parse(HttpContext.Session.GetString("resTo")); 
+                ViewBag.To = DateTime.Parse(HttpContext.Session.GetString("resTo"));
             }
 
             return View(tCategory);
@@ -155,19 +166,19 @@ namespace RoomReservation.Controllers
                 .ToList();
 
 
-                foreach (var item in tRoom)
-                {
-                    item.TRates = _context.TRates.Where(x => x.RoomId == item.RoomId).ToList();
+            foreach (var item in tRoom)
+            {
+                item.TRates = _context.TRates.Where(x => x.RoomId == item.RoomId).ToList();
 
-                    foreach (var item2 in roomList)
+                foreach (var item2 in roomList)
+                {
+                    if (item.RoomId == item2.RoomId)
                     {
-                        if (item.RoomId == item2.RoomId)
-                        {
-                            item.RoomStatus = 0;
-                            break;
-                        }
+                        item.RoomStatus = 0;
+                        break;
                     }
                 }
+            }
 
             return View(tRoom);
         }
@@ -176,7 +187,7 @@ namespace RoomReservation.Controllers
         {
             var tRate = _context.TRates
                 .Include(x => x.User)
-                .Where(y=>y.RoomId == id)
+                .Where(y => y.RoomId == id)
                 .ToList();
 
             return View(tRate);
@@ -203,7 +214,7 @@ namespace RoomReservation.Controllers
             ViewBag.dateFrom = DateTime.Parse(HttpContext.Session.GetString("resFrom")).ToString("yyyy - MMMM - dd");
             ViewBag.dateTo = DateTime.Parse(HttpContext.Session.GetString("resTo")).ToString("yyyy - MMMM - dd");
 
-            if (listRoom.Count()<1)
+            if (listRoom.Count() < 1)
             {
                 return RedirectToAction(nameof(Category));
             }
@@ -247,7 +258,7 @@ namespace RoomReservation.Controllers
                     HttpContext.Session.SetInt32("pending", 0);
                     return RedirectToAction(nameof(Complete));
                 }
-                
+
             }
 
             TempData["Error"] = "Unable to create the reservation. Please try again";
@@ -289,7 +300,7 @@ namespace RoomReservation.Controllers
             var uid = HttpContext.Session.GetInt32("UID");
             var tRes = _context.TReservations
                 .Where(x => x.UserId == uid)
-                .OrderBy(x=>x.ResTo)
+                .OrderBy(x => x.ResTo)
                 .ToList();
 
             return View(tRes);
@@ -306,7 +317,7 @@ namespace RoomReservation.Controllers
             {
                 return RedirectToAction(nameof(Category));
             }
-            
+
         }
         public IActionResult DetailsReservation(int id)
         {
@@ -333,7 +344,7 @@ namespace RoomReservation.Controllers
                     continue;
                 }
 
-                var temp = new TRate { UserId = uid};
+                var temp = new TRate { UserId = uid };
                 bool exist = false;
 
                 if (item.Key.Contains("rate"))
@@ -360,10 +371,10 @@ namespace RoomReservation.Controllers
                 }
             }
 
-            if (tRate.Count>0)
+            if (tRate.Count > 0)
             {
                 var prvRate = _context.TRates
-                    .Where(x => x.UserId == uid && tRate.Select(y=>y.RoomId).Contains(x.RoomId)).ToList();
+                    .Where(x => x.UserId == uid && tRate.Select(y => y.RoomId).Contains(x.RoomId)).ToList();
 
                 var newRate = tRate.Where(x => !prvRate.Any(y => y.RoomId == x.RoomId)).ToList();
                 _context.TRates.AddRange(newRate);
@@ -373,14 +384,29 @@ namespace RoomReservation.Controllers
         }
         public IActionResult CompleteReservation(int id)
         {
+            
+
+            return RedirectToAction(nameof(ManageReservation));
+        }
+
+        public IActionResult Survey(int id)
+        {
             var tRes = new TReservation { ResId = id, ResStatus = 1 };
             _context.TReservations.Attach(tRes);
             _context.Entry(tRes).Property(x => x.ResStatus).IsModified = true;
             _context.SaveChanges();
 
-            return RedirectToAction(nameof(ManageReservation));
+            ViewBag.ResId = id;
+            return View();
         }
 
+        [HttpPost]
+        public async System.Threading.Tasks.Task<IActionResult> CreateSurvey([Bind("SurRoom,SurRoomService,SurService,SurPrice,SurFood,ResId")] TSurvey tSurvey)
+        {
+            _context.Add(tSurvey);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(ManageReservation));
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

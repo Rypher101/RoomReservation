@@ -366,6 +366,7 @@ namespace RoomReservation.Controllers
 
             foreach (var item in tRoomRes)
             {
+                item.TRates = item.TRates = _context.TRates.Where(x => x.RoomId == item.RoomId).ToList();
                 foreach (var item2 in tRoom)
                 {
                     if (item2.RoomId == item.RoomId && item2.RoomStatus == 1)
@@ -385,6 +386,7 @@ namespace RoomReservation.Controllers
 
         public IActionResult CreateRoom()
         {
+            SetDashboard(3);
             if (HttpContext.Session.GetString("UType") != "A")
             {
                 TempData["Error"] = "Insufficient login permission";
@@ -398,6 +400,7 @@ namespace RoomReservation.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRoom([Bind("RoomId,RoomFloor,RoomStatus,CatId")] TRoom tRoom)
         {
+            SetDashboard(3);
             if (HttpContext.Session.GetString("UType") != "A")
             {
                 TempData["Error"] = "Insufficient login permission";
@@ -407,7 +410,7 @@ namespace RoomReservation.Controllers
             {
                 _context.Add(tRoom);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction(nameof(ViewRoom));
             }
             ViewData["CatId"] = new SelectList(_context.TCategories, "CatId", "CatId", tRoom.CatId);
             return RedirectToAction(nameof(ViewRoom));
@@ -415,6 +418,7 @@ namespace RoomReservation.Controllers
 
         public async Task<IActionResult> EditRoom(decimal? id)
         {
+            SetDashboard(3);
             if (HttpContext.Session.GetString("UType") != "A")
             {
                 TempData["Error"] = "Insufficient login permission";
@@ -438,6 +442,7 @@ namespace RoomReservation.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRoom(decimal id, [Bind("RoomId,RoomFloor,RoomStatus,CatId")] TRoom tRoom)
         {
+            SetDashboard(3);
             if (id != tRoom.RoomId)
             {
                 return NotFound();
@@ -470,6 +475,7 @@ namespace RoomReservation.Controllers
 
         public async Task<IActionResult> DeleteRoom(decimal id)
         {
+            SetDashboard(3);
             if (HttpContext.Session.GetString("UType") != "A")
             {
                 TempData["Error"] = "Insufficient login permission";
@@ -485,6 +491,7 @@ namespace RoomReservation.Controllers
 
         public async Task<IActionResult> ActiveRoom(decimal id)
         {
+            SetDashboard(3);
             if (HttpContext.Session.GetString("UType") != "A")
             {
                 TempData["Error"] = "Insufficient login permission";
@@ -498,6 +505,13 @@ namespace RoomReservation.Controllers
             return RedirectToAction(nameof(ViewRoom));
         }
         #endregion
+
+        public IActionResult Survey()
+        {
+            var listSur = _context.TSurveys.OrderBy(x=>x.ResId).ToList();
+            ViewBag.Sur = listSur;
+            return View();
+        }
         private void SetDashboard(int value)
         {
             switch (value)
@@ -512,7 +526,7 @@ namespace RoomReservation.Controllers
                     TempData["Rooms"] = "active";
                     break;
                 case 4:
-                    TempData["Users"] = "active";
+                    TempData["Survey"] = "active";
                     break;
                 default:
                     break;

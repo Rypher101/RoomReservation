@@ -68,7 +68,7 @@
                                             if (item.ResStatus == 0 && item.ResFrom < DateTime.Today)
                                             {
                                                 @x
-                                                <a asp-action="CompleteReservation" asp-route-id="@item.ResId">Complete</a>
+                                                <a asp-action="Survey" asp-route-id="@item.ResId">Complete</a>
                                             }
                                         }
                                     </td>
