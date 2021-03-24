@@ -59,7 +59,7 @@
                         <br />
                         
                         <div>
-                            @foreach (var item in Model.TImg)
+                            @foreach (var item in Model.TImgs)
                             {
                             <a href="@Url.Action("DeleteImg", "Admin", new {id=item.ImId, catId = Model.CatId})"><img src="~/Image/@item.ImPath" height="300" width="400" /></a>
                             }

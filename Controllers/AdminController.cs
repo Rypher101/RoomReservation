@@ -38,12 +38,12 @@ namespace RoomReservation.Controllers
             var dict1 = new Dictionary<DateTime, int>();
             var dict2 = new Dictionary<string, int>();
 
-            var c1 = _context.TReservation
-                .Include(x => x.TReservationRoom)
+            var c1 = _context.TReservations
+                .Include(x => x.TReservationRooms)
                 .ThenInclude(y => y.Room)
                 .ToList();
 
-            var c2 = _context.TCategory.ToDictionary(x=> x.CatId, x=>x.CatBed);
+            var c2 = _context.TCategories.ToDictionary(x=> x.CatId, x=>x.CatBed);
 
             foreach (var item in c1)
             {
@@ -52,7 +52,7 @@ namespace RoomReservation.Controllers
                 if (dict1.ContainsKey(key))
                 {
                     int val = dict1[key];
-                    foreach (var item2 in item.TReservationRoom)
+                    foreach (var item2 in item.TReservationRooms)
                     {
                         val += c2[item2.Room.CatId];
                     }
@@ -61,7 +61,7 @@ namespace RoomReservation.Controllers
                 else
                 {
                     int val = 0;
-                    foreach (var item2 in item.TReservationRoom)
+                    foreach (var item2 in item.TReservationRooms)
                     {
                         val += c2[item2.Room.CatId];
                     }
@@ -71,7 +71,7 @@ namespace RoomReservation.Controllers
 
             foreach (var item in c1)
             {
-                foreach (var item2 in item.TReservationRoom)
+                foreach (var item2 in item.TReservationRooms)
                 {
                     var key = item2.Room.CatId;
 
@@ -120,7 +120,7 @@ namespace RoomReservation.Controllers
             }
 
             SetDashboard(2);
-            var tCat = _context.TCategory.ToList();
+            var tCat = _context.TCategories.ToList();
             return View(tCat);
         }
 
@@ -180,7 +180,7 @@ namespace RoomReservation.Controllers
                 return NotFound();
             }
 
-            var tCategory = await _context.TCategory.FindAsync(id);
+            var tCategory = await _context.TCategories.FindAsync(id);
             if (tCategory == null)
             {
                 return NotFound();
@@ -207,7 +207,7 @@ namespace RoomReservation.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.TCategory.Any(e => e.CatId == id))
+                    if (!_context.TCategories.Any(e => e.CatId == id))
                     {
                         TempData["Error"] = "Couldn't find the category ID. Please try again";
                         return RedirectToAction(nameof(ViewCategory));
@@ -240,7 +240,7 @@ namespace RoomReservation.Controllers
                 return NotFound();
             }
 
-            var tCategory = await _context.TCategory
+            var tCategory = await _context.TCategories
                 .FirstOrDefaultAsync(m => m.CatId == id);
             if (tCategory == null)
             {
@@ -256,8 +256,8 @@ namespace RoomReservation.Controllers
         public async Task<IActionResult> DeleteCategoryConfirmed(string id)
         {
             SetDashboard(2);
-            var tCategory = await _context.TCategory.FindAsync(id);
-            _context.TCategory.Remove(tCategory);
+            var tCategory = await _context.TCategories.FindAsync(id);
+            _context.TCategories.Remove(tCategory);
             await _context.SaveChangesAsync();
             TempData["Message"] = "Delete successfull.";
             return RedirectToAction(nameof(ViewCategory));
@@ -277,9 +277,9 @@ namespace RoomReservation.Controllers
                 return NotFound();
             }
 
-            var tCategory = _context.TCategory
+            var tCategory = _context.TCategories
                 .Where(cat => cat.CatId == id)
-                .Include(ic => ic.TImg)
+                .Include(ic => ic.TImgs)
                 .FirstOrDefault();
 
             if (tCategory == null)
@@ -320,7 +320,7 @@ namespace RoomReservation.Controllers
                 TempData["Error"] = "Insufficient login permission";
                 return RedirectToAction("Index", "Login");
             }
-            var img = _context.TImg
+            var img = _context.TImgs
                 .FirstOrDefault(im => im.ImId == id);
 
             if (img != null)
@@ -332,8 +332,8 @@ namespace RoomReservation.Controllers
                 if (fi.Exists)
                 {
                     fi.Delete();
-                    var tImg = await _context.TImg.FindAsync(id);
-                    _context.TImg.Remove(tImg);
+                    var tImg = await _context.TImgs.FindAsync(id);
+                    _context.TImgs.Remove(tImg);
                     await _context.SaveChangesAsync();
                 }
             }
@@ -352,15 +352,15 @@ namespace RoomReservation.Controllers
             }
 
             SetDashboard(3);
-            List<TRoom> tRoom = (from rm in _context.TRoom
-                                 join rt in _context.TRate on rm.RoomId equals rt.RoomId into roomRate
+            List<TRoom> tRoom = (from rm in _context.TRooms
+                                 join rt in _context.TRates on rm.RoomId equals rt.RoomId into roomRate
                                  from rr in roomRate.DefaultIfEmpty()
                                  orderby rm.RoomId ascending
                                  select rm).ToList();
 
-            List<TRoom> tRoomRes = (from rm in _context.TRoom
-                                    join rr in _context.TReservationRoom on rm.RoomId equals rr.RoomId 
-                                    join rs in _context.TReservation on rr.ResId equals rs.ResId 
+            List<TRoom> tRoomRes = (from rm in _context.TRooms
+                                    join rr in _context.TReservationRooms on rm.RoomId equals rr.RoomId 
+                                    join rs in _context.TReservations on rr.ResId equals rs.ResId 
                                     orderby rm.RoomId ascending
                                     select rm).ToList();
 
@@ -390,7 +390,7 @@ namespace RoomReservation.Controllers
                 TempData["Error"] = "Insufficient login permission";
                 return RedirectToAction("Index", "Login");
             }
-            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId");
+            ViewData["CatId"] = new SelectList(_context.TCategories, "CatId", "CatId");
             return View();
         }
 
@@ -409,7 +409,7 @@ namespace RoomReservation.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId", tRoom.CatId);
+            ViewData["CatId"] = new SelectList(_context.TCategories, "CatId", "CatId", tRoom.CatId);
             return RedirectToAction(nameof(ViewRoom));
         }
 
@@ -425,12 +425,12 @@ namespace RoomReservation.Controllers
                 return NotFound();
             }
 
-            var tRoom = await _context.TRoom.FindAsync(id);
+            var tRoom = await _context.TRooms.FindAsync(id);
             if (tRoom == null)
             {
                 return NotFound();
             }
-            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId", tRoom.CatId);
+            ViewData["CatId"] = new SelectList(_context.TCategories, "CatId", "CatId", tRoom.CatId);
             return View(tRoom);
         }
 
@@ -453,7 +453,7 @@ namespace RoomReservation.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!_context.TRoom.Any(e => e.RoomId == id))
+                    if (!_context.TRooms.Any(e => e.RoomId == id))
                     {
                         return NotFound();
                     }
@@ -464,7 +464,7 @@ namespace RoomReservation.Controllers
                 }
                 return RedirectToAction(nameof(ViewRoom));
             }
-            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId", tRoom.CatId);
+            ViewData["CatId"] = new SelectList(_context.TCategories, "CatId", "CatId", tRoom.CatId);
             return View(tRoom);
         }
 

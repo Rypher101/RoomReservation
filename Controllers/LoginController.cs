@@ -34,7 +34,7 @@ namespace RoomReservation.Controllers
             try
             {
                 tUser.ShaEnc();
-                var user = await _context.TUser
+                var user = await _context.TUsers
                     .FirstOrDefaultAsync(e => e.UserEmail == tUser.UserEmail && e.UserPass == tUser.UserPass && e.UserStatus == 1);
 
                 if (user == null)
@@ -69,7 +69,7 @@ namespace RoomReservation.Controllers
                 return NotFound();
             }
 
-            var tUser = await _context.TUser
+            var tUser = await _context.TUsers
                 .FirstOrDefaultAsync(m => m.UserId == id);
             if (tUser == null)
             {
@@ -125,7 +125,7 @@ namespace RoomReservation.Controllers
                 return NotFound();
             }
 
-            var tUser = await _context.TUser.FindAsync(id);
+            var tUser = await _context.TUsers.FindAsync(id);
             if (tUser == null)
             {
                 return NotFound();
@@ -176,7 +176,7 @@ namespace RoomReservation.Controllers
                 return NotFound();
             }
 
-            var tUser = await _context.TUser
+            var tUser = await _context.TUsers
                 .FirstOrDefaultAsync(m => m.UserId == id);
             if (tUser == null)
             {
@@ -191,15 +191,15 @@ namespace RoomReservation.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var tUser = await _context.TUser.FindAsync(id);
-            _context.TUser.Remove(tUser);
+            var tUser = await _context.TUsers.FindAsync(id);
+            _context.TUsers.Remove(tUser);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool TUserExists(int id)
         {
-            return _context.TUser.Any(e => e.UserId == id);
+            return _context.TUsers.Any(e => e.UserId == id);
         }
     }
 }

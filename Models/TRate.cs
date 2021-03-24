@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
-// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
-// If you have enabled NRTs for your project, then un-comment the following line:
-// #nullable disable
+#nullable disable
 
 namespace RoomReservation.Models
 {
@@ -24,10 +23,10 @@ namespace RoomReservation.Models
         public string Review { get; set; }
 
         [ForeignKey(nameof(RoomId))]
-        [InverseProperty(nameof(TRoom.TRate))]
+        [InverseProperty(nameof(TRoom.TRates))]
         public virtual TRoom Room { get; set; }
         [ForeignKey(nameof(UserId))]
-        [InverseProperty(nameof(TUser.TRate))]
+        [InverseProperty(nameof(TUser.TRates))]
         public virtual TUser User { get; set; }
     }
 }

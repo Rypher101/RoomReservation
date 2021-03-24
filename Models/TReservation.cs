@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
-// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
-// If you have enabled NRTs for your project, then un-comment the following line:
-// #nullable disable
+#nullable disable
 
 namespace RoomReservation.Models
 {
@@ -14,13 +13,13 @@ namespace RoomReservation.Models
     {
         public TReservation()
         {
-            TReservationRoom = new HashSet<TReservationRoom>();
+            TReservationRooms = new HashSet<TReservationRoom>();
+            TSurveys = new HashSet<TSurvey>();
         }
 
         [Key]
         [Column("res_id")]
         public int ResId { get; set; }
-        [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
         [Column("res_date", TypeName = "date")]
         public DateTime ResDate { get; set; }
         [Column("res_from", TypeName = "date")]
@@ -33,9 +32,11 @@ namespace RoomReservation.Models
         public int? UserId { get; set; }
 
         [ForeignKey(nameof(UserId))]
-        [InverseProperty(nameof(TUser.TReservation))]
+        [InverseProperty(nameof(TUser.TReservations))]
         public virtual TUser User { get; set; }
-        [InverseProperty("Res")]
-        public virtual ICollection<TReservationRoom> TReservationRoom { get; set; }
+        [InverseProperty(nameof(TReservationRoom.Res))]
+        public virtual ICollection<TReservationRoom> TReservationRooms { get; set; }
+        [InverseProperty(nameof(TSurvey.Res))]
+        public virtual ICollection<TSurvey> TSurveys { get; set; }
     }
 }

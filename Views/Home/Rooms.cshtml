@@ -39,14 +39,14 @@
                                     <td>
                                         @{
                                             decimal rate = 0;
-                                            foreach (var r in item.TRate)
+                                            foreach (var r in item.TRates)
                                             {
                                                 rate += r.Rate;
                                             }
 
-                                            if (item.TRate.Count() > 0)
+                                            if (item.TRates.Count() > 0)
                                             {
-                                                rate = rate / item.TRate.Count();
+                                                rate = rate / item.TRates.Count();
                                                 @rate
                                             }
                                             else
@@ -70,7 +70,7 @@
 
 
                                         @{ var x = "|";
-                                            if (item.TRate.Count() > 0)
+                                            if (item.TRates.Count() > 0)
                                             {
                                               @x  <a asp-action="DetailsRooms" asp-route-id= "@item.RoomId"> Reviews </a>
                                             }

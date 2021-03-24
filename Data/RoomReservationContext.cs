@@ -4,9 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using RoomReservation.Models;
 
-// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
-// If you have enabled NRTs for your project, then un-comment the following line:
-// #nullable disable
+#nullable disable
 
 namespace RoomReservation.Data
 {
@@ -21,13 +19,14 @@ namespace RoomReservation.Data
         {
         }
 
-        public virtual DbSet<TCategory> TCategory { get; set; }
-        public virtual DbSet<TImg> TImg { get; set; }
-        public virtual DbSet<TRate> TRate { get; set; }
-        public virtual DbSet<TReservation> TReservation { get; set; }
-        public virtual DbSet<TReservationRoom> TReservationRoom { get; set; }
-        public virtual DbSet<TRoom> TRoom { get; set; }
-        public virtual DbSet<TUser> TUser { get; set; }
+        public virtual DbSet<TCategory> TCategories { get; set; }
+        public virtual DbSet<TImg> TImgs { get; set; }
+        public virtual DbSet<TRate> TRates { get; set; }
+        public virtual DbSet<TReservation> TReservations { get; set; }
+        public virtual DbSet<TReservationRoom> TReservationRooms { get; set; }
+        public virtual DbSet<TRoom> TRooms { get; set; }
+        public virtual DbSet<TSurvey> TSurveys { get; set; }
+        public virtual DbSet<TUser> TUsers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -39,6 +38,8 @@ namespace RoomReservation.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
+
             modelBuilder.Entity<TCategory>(entity =>
             {
                 entity.Property(e => e.CatId).IsUnicode(false);
@@ -51,9 +52,9 @@ namespace RoomReservation.Data
                 entity.Property(e => e.CatId).IsUnicode(false);
 
                 entity.HasOne(d => d.Cat)
-                    .WithMany(p => p.TImg)
+                    .WithMany(p => p.TImgs)
                     .HasForeignKey(d => d.CatId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_t_img_t_category");
             });
 
@@ -64,13 +65,13 @@ namespace RoomReservation.Data
                 entity.Property(e => e.Rate).HasDefaultValueSql("((1))");
 
                 entity.HasOne(d => d.Room)
-                    .WithMany(p => p.TRate)
+                    .WithMany(p => p.TRates)
                     .HasForeignKey(d => d.RoomId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_t_rate_t_room");
 
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.TRate)
+                    .WithMany(p => p.TRates)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_t_rate_t_user");
@@ -78,8 +79,10 @@ namespace RoomReservation.Data
 
             modelBuilder.Entity<TReservation>(entity =>
             {
+                entity.Property(e => e.ResDate).HasDefaultValueSql("(getdate())");
+
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.TReservation)
+                    .WithMany(p => p.TReservations)
                     .HasForeignKey(d => d.UserId)
                     .HasConstraintName("FK_t_reservation_t_user");
             });
@@ -88,16 +91,14 @@ namespace RoomReservation.Data
             {
                 entity.HasKey(e => new { e.ResId, e.RoomId });
 
-                entity.Property(e => e.ResId).ValueGeneratedOnAdd();
-
                 entity.HasOne(d => d.Res)
-                    .WithMany(p => p.TReservationRoom)
+                    .WithMany(p => p.TReservationRooms)
                     .HasForeignKey(d => d.ResId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_t_reservation_room_t_reservation");
 
                 entity.HasOne(d => d.Room)
-                    .WithMany(p => p.TReservationRoom)
+                    .WithMany(p => p.TReservationRooms)
                     .HasForeignKey(d => d.RoomId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_t_reservation_room_t_room");
@@ -110,27 +111,32 @@ namespace RoomReservation.Data
                 entity.Property(e => e.RoomStatus).HasDefaultValueSql("((1))");
 
                 entity.HasOne(d => d.Cat)
-                    .WithMany(p => p.TRoom)
+                    .WithMany(p => p.TRooms)
                     .HasForeignKey(d => d.CatId)
                     .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_t_room_t_category");
             });
 
+            modelBuilder.Entity<TSurvey>(entity =>
+            {
+                entity.HasOne(d => d.Res)
+                    .WithMany(p => p.TSurveys)
+                    .HasForeignKey(d => d.ResId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_t_survey_t_reservation");
+            });
+
             modelBuilder.Entity<TUser>(entity =>
             {
-                entity.HasIndex(e => e.UserEmail)
-                    .HasName("IX_t_user")
-                    .IsUnique();
-
                 entity.Property(e => e.UserAddress).IsUnicode(false);
 
-                entity.Property(e => e.UserEmail).IsFixedLength();
+                entity.Property(e => e.UserEmail).IsFixedLength(true);
 
                 entity.Property(e => e.UserName).IsUnicode(false);
 
                 entity.Property(e => e.UserPass)
                     .IsUnicode(false)
-                    .IsFixedLength();
+                    .IsFixedLength(true);
 
                 entity.Property(e => e.UserStatus).HasDefaultValueSql("((1))");
 

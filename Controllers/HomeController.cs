@@ -28,17 +28,17 @@ namespace RoomReservation.Controllers
 
         public IActionResult Index()
         {
-            var cus = from rs in _context.TReservation
-                      join rr in _context.TReservationRoom on rs.ResId equals rr.ResId
-                      join rm in _context.TRoom on rr.RoomId equals rm.RoomId
-                      join cat in _context.TCategory on rm.CatId equals cat.CatId
+            var cus = from rs in _context.TReservations
+                      join rr in _context.TReservationRooms on rs.ResId equals rr.ResId
+                      join rm in _context.TRooms on rr.RoomId equals rm.RoomId
+                      join cat in _context.TCategories on rm.CatId equals cat.CatId
                       group cat by cat.CatId into bdCount
                       select new
                       {
                           customers = bdCount.Sum(x => x.CatBed)
                       };
 
-            var reservations = (from res in _context.TReservation
+            var reservations = (from res in _context.TReservations
                                 where res.ResStatus == 1 && res.ResTo > DateTime.Today
                                 select res).Count();
             return View();
@@ -46,17 +46,17 @@ namespace RoomReservation.Controllers
 
         public IActionResult Category()
         {
-            var tCategory = _context.TCategory
-                .Include(ic => ic.TImg)
+            var tCategory = _context.TCategories
+                .Include(ic => ic.TImgs)
                 .ToList();
 
             if (HttpContext.Session.GetInt32("UID") != -1 && HttpContext.Session.GetInt32("UID") != null)
             {
-                var recom = (from res in _context.TReservation
+                var recom = (from res in _context.TReservations
                             where res.UserId == HttpContext.Session.GetInt32("UID")
-                            join rr in _context.TReservationRoom on res.ResId equals rr.ResId
-                            join rm in _context.TRoom on rr.RoomId equals rm.RoomId
-                            join cat in _context.TCategory on rm.CatId equals cat.CatId
+                            join rr in _context.TReservationRooms on res.ResId equals rr.ResId
+                            join rm in _context.TRooms on rr.RoomId equals rm.RoomId
+                            join cat in _context.TCategories on rm.CatId equals cat.CatId
                             select new
                             {
                                 cat
@@ -144,9 +144,9 @@ namespace RoomReservation.Controllers
                 }
             }
 
-            var tRoom = _context.TRoom
+            var tRoom = _context.TRooms
                 .Where(x => x.CatId == catID.ToString() &&
-                    !_context.TReservationRoom
+                    !_context.TReservationRooms
                         .Include(res => res.Res)
                         .Where(res => (res.Res.ResFrom >= dtFrom && res.Res.ResFrom <= dtTo) || (res.Res.ResFrom <= dtFrom && res.Res.ResTo >= dtTo))
                         .Select(res => res.RoomId)
@@ -157,7 +157,7 @@ namespace RoomReservation.Controllers
 
                 foreach (var item in tRoom)
                 {
-                    item.TRate = _context.TRate.Where(x => x.RoomId == item.RoomId).ToList();
+                    item.TRates = _context.TRates.Where(x => x.RoomId == item.RoomId).ToList();
 
                     foreach (var item2 in roomList)
                     {
@@ -174,7 +174,7 @@ namespace RoomReservation.Controllers
 
         public IActionResult DetailsRooms(decimal id)
         {
-            var tRate = _context.TRate
+            var tRate = _context.TRates
                 .Include(x => x.User)
                 .Where(y=>y.RoomId == id)
                 .ToList();
@@ -208,7 +208,7 @@ namespace RoomReservation.Controllers
                 return RedirectToAction(nameof(Category));
             }
 
-            var rooms = _context.TRoom
+            var rooms = _context.TRooms
                 .Include(x => x.Cat)
                 .Where(y => listRoom.Select(z => z.RoomId).Contains(y.RoomId)).ToList();
 
@@ -231,7 +231,7 @@ namespace RoomReservation.Controllers
             _context.Add(tRes);
             if (await _context.SaveChangesAsync() > 0)
             {
-                int resId = _context.TReservation.Max(x => x.ResId);
+                int resId = _context.TReservations.Max(x => x.ResId);
                 var listRoom = JsonConvert.DeserializeObject<List<TRoom>>(HttpContext.Session.GetString("rooms"));
                 var resRoom = new List<TReservationRoom>();
 
@@ -241,7 +241,7 @@ namespace RoomReservation.Controllers
                     resRoom.Add(temp);
                 }
 
-                _context.TReservationRoom.AddRange(resRoom);
+                _context.TReservationRooms.AddRange(resRoom);
                 if (await _context.SaveChangesAsync() > 0)
                 {
                     HttpContext.Session.SetInt32("pending", 0);
@@ -266,9 +266,9 @@ namespace RoomReservation.Controllers
                 return NotFound();
             }
 
-            var tCategory = _context.TCategory
+            var tCategory = _context.TCategories
                 .Where(cat => cat.CatId == id)
-                .Include(ic => ic.TImg)
+                .Include(ic => ic.TImgs)
                 .FirstOrDefault();
 
             if (tCategory == null)
@@ -287,7 +287,7 @@ namespace RoomReservation.Controllers
         public IActionResult ManageReservation()
         {
             var uid = HttpContext.Session.GetInt32("UID");
-            var tRes = _context.TReservation
+            var tRes = _context.TReservations
                 .Where(x => x.UserId == uid)
                 .OrderBy(x=>x.ResTo)
                 .ToList();
@@ -310,8 +310,8 @@ namespace RoomReservation.Controllers
         }
         public IActionResult DetailsReservation(int id)
         {
-            var tRes = _context.TReservation
-                .Include(x => x.TReservationRoom)
+            var tRes = _context.TReservations
+                .Include(x => x.TReservationRooms)
                 .ThenInclude(y => y.Room)
                 .Where(w => w.ResId == id)
                 .ToList();
@@ -362,11 +362,11 @@ namespace RoomReservation.Controllers
 
             if (tRate.Count>0)
             {
-                var prvRate = _context.TRate
+                var prvRate = _context.TRates
                     .Where(x => x.UserId == uid && tRate.Select(y=>y.RoomId).Contains(x.RoomId)).ToList();
 
                 var newRate = tRate.Where(x => !prvRate.Any(y => y.RoomId == x.RoomId)).ToList();
-                _context.TRate.AddRange(newRate);
+                _context.TRates.AddRange(newRate);
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(ManageReservation));
@@ -374,7 +374,7 @@ namespace RoomReservation.Controllers
         public IActionResult CompleteReservation(int id)
         {
             var tRes = new TReservation { ResId = id, ResStatus = 1 };
-            _context.TReservation.Attach(tRes);
+            _context.TReservations.Attach(tRes);
             _context.Entry(tRes).Property(x => x.ResStatus).IsModified = true;
             _context.SaveChanges();
 

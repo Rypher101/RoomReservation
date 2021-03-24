@@ -60,7 +60,7 @@
         <div class="row portfolio-container">
             @foreach (var category in Model)
             {
-                @foreach (var img in category.TImg)
+                @foreach (var img in category.TImgs)
                 {
                     <div class="col-lg-4 col-md-6 portfolio-item filter-@category.CatType.Replace(" ","")">
                         <div class="portfolio-wrap" style="width:400px; height:300px">

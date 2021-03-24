@@ -4,20 +4,20 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.EntityFrameworkCore;
 
-// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
-// If you have enabled NRTs for your project, then un-comment the following line:
-// #nullable disable
+#nullable disable
 
 namespace RoomReservation.Models
 {
     [Table("t_user")]
+    [Index(nameof(UserEmail), Name = "IX_t_user", IsUnique = true)]
     public partial class TUser
     {
         public TUser()
         {
-            TRate = new HashSet<TRate>();
-            TReservation = new HashSet<TReservation>();
+            TRates = new HashSet<TRate>();
+            TReservations = new HashSet<TReservation>();
         }
 
         [Key]
@@ -47,10 +47,10 @@ namespace RoomReservation.Models
         [Column("user_type")]
         public bool? UserType { get; set; }
 
-        [InverseProperty("User")]
-        public virtual ICollection<TRate> TRate { get; set; }
-        [InverseProperty("User")]
-        public virtual ICollection<TReservation> TReservation { get; set; }
+        [InverseProperty(nameof(TRate.User))]
+        public virtual ICollection<TRate> TRates { get; set; }
+        [InverseProperty(nameof(TReservation.User))]
+        public virtual ICollection<TReservation> TReservations { get; set; }
 
         public void ShaEnc()
         {
@@ -62,7 +62,7 @@ namespace RoomReservation.Models
                 {
                     builder.Append(bytes[i].ToString("x2"));
                 }
-                UserPass= builder.ToString();
+                UserPass = builder.ToString();
             }
         }
     }

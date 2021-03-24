@@ -22,7 +22,7 @@ namespace RoomReservation.Controllers
         // GET: TRooms
         public async Task<IActionResult> Index()
         {
-            var roomReservationContext = _context.TRoom.Include(t => t.Cat);
+            var roomReservationContext = _context.TRooms.Include(t => t.Cat);
             return View(await roomReservationContext.ToListAsync());
         }
 
@@ -34,7 +34,7 @@ namespace RoomReservation.Controllers
                 return NotFound();
             }
 
-            var tRoom = await _context.TRoom
+            var tRoom = await _context.TRooms
                 .Include(t => t.Cat)
                 .FirstOrDefaultAsync(m => m.RoomId == id);
             if (tRoom == null)
@@ -48,7 +48,7 @@ namespace RoomReservation.Controllers
         // GET: TRooms/Create
         public IActionResult Create()
         {
-            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId");
+            ViewData["CatId"] = new SelectList(_context.TCategories, "CatId", "CatId");
             return View();
         }
 
@@ -65,7 +65,7 @@ namespace RoomReservation.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId", tRoom.CatId);
+            ViewData["CatId"] = new SelectList(_context.TCategories, "CatId", "CatId", tRoom.CatId);
             return View(tRoom);
         }
 
@@ -77,12 +77,12 @@ namespace RoomReservation.Controllers
                 return NotFound();
             }
 
-            var tRoom = await _context.TRoom.FindAsync(id);
+            var tRoom = await _context.TRooms.FindAsync(id);
             if (tRoom == null)
             {
                 return NotFound();
             }
-            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId", tRoom.CatId);
+            ViewData["CatId"] = new SelectList(_context.TCategories, "CatId", "CatId", tRoom.CatId);
             return View(tRoom);
         }
 
@@ -118,7 +118,7 @@ namespace RoomReservation.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["CatId"] = new SelectList(_context.TCategory, "CatId", "CatId", tRoom.CatId);
+            ViewData["CatId"] = new SelectList(_context.TCategories, "CatId", "CatId", tRoom.CatId);
             return View(tRoom);
         }
 
@@ -130,7 +130,7 @@ namespace RoomReservation.Controllers
                 return NotFound();
             }
 
-            var tRoom = await _context.TRoom
+            var tRoom = await _context.TRooms
                 .Include(t => t.Cat)
                 .FirstOrDefaultAsync(m => m.RoomId == id);
             if (tRoom == null)
@@ -146,15 +146,15 @@ namespace RoomReservation.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(decimal id)
         {
-            var tRoom = await _context.TRoom.FindAsync(id);
-            _context.TRoom.Remove(tRoom);
+            var tRoom = await _context.TRooms.FindAsync(id);
+            _context.TRooms.Remove(tRoom);
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool TRoomExists(decimal id)
         {
-            return _context.TRoom.Any(e => e.RoomId == id);
+            return _context.TRooms.Any(e => e.RoomId == id);
         }
     }
 }

@@ -2,10 +2,9 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
-// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
-// If you have enabled NRTs for your project, then un-comment the following line:
-// #nullable disable
+#nullable disable
 
 namespace RoomReservation.Models
 {
@@ -14,8 +13,8 @@ namespace RoomReservation.Models
     {
         public TCategory()
         {
-            TImg = new HashSet<TImg>();
-            TRoom = new HashSet<TRoom>();
+            TImgs = new HashSet<TImg>();
+            TRooms = new HashSet<TRoom>();
         }
 
         [Key]
@@ -34,9 +33,9 @@ namespace RoomReservation.Models
         [Column("cat_price", TypeName = "decimal(12, 2)")]
         public decimal CatPrice { get; set; }
 
-        [InverseProperty("Cat")]
-        public virtual ICollection<TImg> TImg { get; set; }
-        [InverseProperty("Cat")]
-        public virtual ICollection<TRoom> TRoom { get; set; }
+        [InverseProperty(nameof(TImg.Cat))]
+        public virtual ICollection<TImg> TImgs { get; set; }
+        [InverseProperty(nameof(TRoom.Cat))]
+        public virtual ICollection<TRoom> TRooms { get; set; }
     }
 }
