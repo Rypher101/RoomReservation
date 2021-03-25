@@ -63,24 +63,6 @@ namespace RoomReservation.Controllers
             }
         }
 
-        // GET: Login/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var tUser = await _context.TUsers
-                .FirstOrDefaultAsync(m => m.UserId == id);
-            if (tUser == null)
-            {
-                return NotFound();
-            }
-
-            return View(tUser);
-        }
-
         // GET: Login/Create
         public IActionResult Create()
         {
@@ -117,86 +99,6 @@ namespace RoomReservation.Controllers
 
             ViewBag.Error = "Unable to register this user. Please try agian";
             return View(tUser);
-        }
-
-        // GET: Login/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var tUser = await _context.TUsers.FindAsync(id);
-            if (tUser == null)
-            {
-                return NotFound();
-            }
-            return View(tUser);
-        }
-
-        // POST: Login/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to, for 
-        // more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("UserId,UserName,UserPass,UserEmail,UserAddress,UserTp,UserStatus")] TUser tUser)
-        {
-            if (id != tUser.UserId)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(tUser);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!TUserExists(tUser.UserId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(tUser);
-        }
-
-        // GET: Login/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var tUser = await _context.TUsers
-                .FirstOrDefaultAsync(m => m.UserId == id);
-            if (tUser == null)
-            {
-                return NotFound();
-            }
-
-            return View(tUser);
-        }
-
-        // POST: Login/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var tUser = await _context.TUsers.FindAsync(id);
-            _context.TUsers.Remove(tUser);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
         }
 
         private bool TUserExists(int id)
