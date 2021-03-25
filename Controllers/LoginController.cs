@@ -19,6 +19,7 @@ namespace RoomReservation.Controllers
             _context = context;
         }
 
+        //View login page
         // GET: Login
         public IActionResult Index()
         {
@@ -27,6 +28,7 @@ namespace RoomReservation.Controllers
             return View();
         }
 
+        //Login process
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> LoginMember([Bind("UserEmail,UserPass")] TUser tUser)

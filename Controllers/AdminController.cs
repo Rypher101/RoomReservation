@@ -26,6 +26,7 @@ namespace RoomReservation.Controllers
             _context = context;
         }
 
+        //Dashboard page
         public IActionResult Index()
         {
             if (HttpContext.Session.GetString("UType") != "A")
@@ -111,6 +112,7 @@ namespace RoomReservation.Controllers
         }
 
         #region Category
+        //View category page
         public IActionResult ViewCategory()
         {
             if (HttpContext.Session.GetString("UType") != "A")
@@ -135,6 +137,7 @@ namespace RoomReservation.Controllers
             return View();
         }
 
+        //Create new category
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> NewCategory([Bind("CatId,CatType,CatBed,CatDescription,CatPrice")] TCategory tCat)
@@ -188,6 +191,7 @@ namespace RoomReservation.Controllers
             return View(tCategory);
         }
 
+        //Save edited category
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditCategory(string id, [Bind("CatId,CatType,CatBed,CatDescription,CatPrice")] TCategory tCategory)
@@ -226,43 +230,7 @@ namespace RoomReservation.Controllers
             return View(tCategory);
         }
 
-        // GET: TCategories/Delete/5
-        public async Task<IActionResult> DeleteCategory(string id)
-        {
-            if (HttpContext.Session.GetString("UType") != "A")
-            {
-                TempData["Error"] = "Insufficient login permission";
-                return RedirectToAction("Index", "Login");
-            }
-            SetDashboard(2);
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var tCategory = await _context.TCategories
-                .FirstOrDefaultAsync(m => m.CatId == id);
-            if (tCategory == null)
-            {
-                return NotFound();
-            }
-
-            return View(tCategory);
-        }
-
-        // POST: TCategories/Delete/5
-        [HttpPost, ActionName("DeleteCategory")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteCategoryConfirmed(string id)
-        {
-            SetDashboard(2);
-            var tCategory = await _context.TCategories.FindAsync(id);
-            _context.TCategories.Remove(tCategory);
-            await _context.SaveChangesAsync();
-            TempData["Message"] = "Delete successfull.";
-            return RedirectToAction(nameof(ViewCategory));
-        }
-
+        //View one category with details
         // GET: TCategories/Details/5
         public IActionResult DetailsCategory(string id)
         {
@@ -313,6 +281,7 @@ namespace RoomReservation.Controllers
             return RedirectToAction("DetailsCategory", new { id = imgModel.CatId });
         }
 
+        //Delete Image from db and server
         public async Task<IActionResult> DeleteImg(int id, string catId)
         {
             if (HttpContext.Session.GetString("UType") != "A")
@@ -343,6 +312,7 @@ namespace RoomReservation.Controllers
         #endregion
 
         #region Room
+        //View rooms
         public IActionResult ViewRoom()
         {
             if (HttpContext.Session.GetString("UType") != "A")
@@ -384,6 +354,7 @@ namespace RoomReservation.Controllers
             return View(tRoom);
         }
 
+        //Create new room age
         public IActionResult CreateRoom()
         {
             SetDashboard(3);
@@ -396,6 +367,7 @@ namespace RoomReservation.Controllers
             return View();
         }
 
+        //Save created room on db
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateRoom([Bind("RoomId,RoomFloor,RoomStatus,CatId")] TRoom tRoom)
@@ -416,6 +388,7 @@ namespace RoomReservation.Controllers
             return RedirectToAction(nameof(ViewRoom));
         }
 
+        //view edit page for room
         public async Task<IActionResult> EditRoom(decimal? id)
         {
             SetDashboard(3);
@@ -438,6 +411,7 @@ namespace RoomReservation.Controllers
             return View(tRoom);
         }
 
+        //Save edit changes of room
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> EditRoom(decimal id, [Bind("RoomId,RoomFloor,RoomStatus,CatId")] TRoom tRoom)
@@ -473,6 +447,7 @@ namespace RoomReservation.Controllers
             return View(tRoom);
         }
 
+        //Room out of order
         public async Task<IActionResult> DeleteRoom(decimal id)
         {
             SetDashboard(3);
@@ -489,6 +464,7 @@ namespace RoomReservation.Controllers
             return RedirectToAction(nameof(ViewRoom));
         }
 
+        //Change out of order to active
         public async Task<IActionResult> ActiveRoom(decimal id)
         {
             SetDashboard(3);
@@ -506,6 +482,7 @@ namespace RoomReservation.Controllers
         }
         #endregion
 
+        //view survey page
         public IActionResult Survey()
         {
             var listSur = _context.TSurveys.OrderBy(x=>x.ResId).ToList();

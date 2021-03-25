@@ -26,6 +26,7 @@ namespace RoomReservation.Controllers
 
         }
 
+        //View home page
         public IActionResult Index()
         {
             var c1 = _context.TReservations
@@ -60,6 +61,7 @@ namespace RoomReservation.Controllers
             return View();
         }
 
+        //view make reservation page
         public IActionResult Category()
         {
             var tCategory = _context.TCategories
@@ -114,6 +116,7 @@ namespace RoomReservation.Controllers
             return View(tCategory);
         }
 
+        //View rooms of selected category
         public IActionResult Rooms(decimal id = 0, IFormCollection collection = null)
         {
             DateTime dtFrom;
@@ -188,6 +191,7 @@ namespace RoomReservation.Controllers
             return View(tRoom);
         }
 
+        //View reviews of room
         public IActionResult DetailsRooms(decimal id)
         {
             var tRate = _context.TRates
@@ -198,6 +202,7 @@ namespace RoomReservation.Controllers
             return View(tRate);
         }
 
+        //Remove selected room
         public IActionResult RemoveRoom(decimal id)
         {
             List<TRoom> roomList = JsonConvert.DeserializeObject<List<TRoom>>(HttpContext.Session.GetString("rooms"));
@@ -208,6 +213,8 @@ namespace RoomReservation.Controllers
 
             return RedirectToAction("Rooms", new { id = -1 });
         }
+
+        //View reservation
         public IActionResult Reservation()
         {
             if (HttpContext.Session.GetInt32("pending") != 1)
@@ -231,6 +238,7 @@ namespace RoomReservation.Controllers
             return View(rooms);
         }
 
+        //Confirm reservation
         public async System.Threading.Tasks.Task<IActionResult> MakeReservation()
         {
             if (HttpContext.Session.GetInt32("pending") != 1)
@@ -275,6 +283,7 @@ namespace RoomReservation.Controllers
             return View();
         }
 
+        //View category details
         public IActionResult DetailCategory(string id)
         {
             if (id == null)
@@ -300,6 +309,7 @@ namespace RoomReservation.Controllers
             return View();
         }
 
+        //Manage reservation page
         public IActionResult ManageReservation()
         {
             var uid = HttpContext.Session.GetInt32("UID");
@@ -311,6 +321,7 @@ namespace RoomReservation.Controllers
             return View(tRes);
         }
 
+        //clear reservation from session
         public IActionResult ClearReservation(int id)
         {
             HttpContext.Session.SetInt32("pending", 0);
@@ -324,6 +335,8 @@ namespace RoomReservation.Controllers
             }
 
         }
+
+        //Reservation details page
         public IActionResult DetailsReservation(int id)
         {
             var tRes = _context.TReservations
@@ -335,6 +348,7 @@ namespace RoomReservation.Controllers
             return View(tRes);
         }
 
+        //View submit reviwe page
         public async System.Threading.Tasks.Task<IActionResult> Review(IFormCollection collection)
         {
             var tRate = new List<TRate>();
@@ -389,11 +403,10 @@ namespace RoomReservation.Controllers
         }
         public IActionResult CompleteReservation(int id)
         {
-            
-
             return RedirectToAction(nameof(ManageReservation));
         }
 
+        //view Survey page
         public IActionResult Survey(int id)
         {
             var tRes = new TReservation { ResId = id, ResStatus = 1 };
@@ -405,6 +418,7 @@ namespace RoomReservation.Controllers
             return View();
         }
 
+        //Save survey result in DB
         [HttpPost]
         public async System.Threading.Tasks.Task<IActionResult> CreateSurvey([Bind("SurRoom,SurRoomService,SurService,SurPrice,SurFood,ResId")] TSurvey tSurvey)
         {
