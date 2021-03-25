@@ -62,7 +62,12 @@
                     </li>
                     @if ((bool)TempData["User"] == true)
                     {
-                        <li><a class="nav-link scrollto" href="@Url.Action("Index", "Login")">Log out</a></li>
+                        <li class="dropdown">
+                            <a href="#"><span>Hi, @ViewBag.Name</span> <i class="bi bi-chevron-down"></i></a>
+                            <ul>
+                                <li><a class="nav-link scrollto" href="@Url.Action("Index", "Login")">Log out</a></li>
+                            </ul>
+                        </li>
                     }
                     else
                     {
@@ -119,7 +124,9 @@
 
                 <div class="row no-gutters">
                     <div class="col-xl-5 d-flex align-items-stretch justify-content-center justify-content-lg-start">
-                        <iframe width="560" height="315" src="https://www.youtube.com/embed/wnwsvVsKNt8?start=9" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        <video width="560" height="500" controls>
+                            <source src="~/Video/Introduction Video_ Starwood Hotels & Resorts.mp4" type="video/mp4">
+                        </video>
                     </div>
                     <div class="col-xl-7 ps-0 ps-lg-5 pe-lg-1 d-flex align-items-stretch">
                         <div class="content d-flex flex-column justify-content-center">
@@ -159,7 +166,7 @@
         <section id="counts" class="counts">
             <div class="container">
 
-                <div class="row no-gutters">
+                <div class="row no-gutters justify-content-center">
 
                     <div class="col-lg-3 col-md-6 d-md-flex align-items-md-stretch">
                         <div class="count-box">
@@ -234,28 +241,28 @@
 
                 <div class="row">
                     <div class="col-lg-4 col-md-6 icon-box">
-                        <div class="icon"><i class="bi bi-briefcase"></i></div>
-                        <h4 class="title"><a href="">Shape</a></h4>
+                        <div class="icon"><i class="bi bi-calendar2-day"></i></div>
+                        <h4 class="title"><a href="">Banquet Booking</a></h4>
                         <p class="description">This can be a British Standard to meet an industry need, a PAS to fulfil an immediate market need or your own private standard which will improve and formalize your internal processes. </p>
                     </div>
                     <div class="col-lg-4 col-md-6 icon-box">
-                        <div class="icon"><i class="bi bi-card-checklist"></i></div>
-                        <h4 class="title"><a href="">Tasks</a></h4>
+                        <div class="icon"><i class="bi bi-bicycle"></i></div>
+                        <h4 class="title"><a href="">Bicycle Rental</a></h4>
                         <p class="description">There are many ways you can get involved from commenting on draft standards to becoming a consumer representative. Industry experts help us to develop and publish British Standards and books, gaining priceless knowledge, contacts and recognition by doing so. Interested in joining</p>
                     </div>
                     <div class="col-lg-4 col-md-6 icon-box">
-                        <div class="icon"><i class="bi bi-bar-chart"></i></div>
-                        <h4 class="title"><a href="">Coverage</a></h4>
+                        <div class="icon"><i class="bi bi-music-note-list"></i></div>
+                        <h4 class="title"><a href="">Outdoor Parties</a></h4>
                         <p class="description">Get instant access to a vast array of standards, and discover quicker and easier ways to work with them.</p>
                     </div>
                     <div class="col-lg-4 col-md-6 icon-box">
                         <div class="icon"><i class="bi bi-binoculars"></i></div>
-                        <h4 class="title"><a href="">Find</a></h4>
+                        <h4 class="title"><a href="">Bird Watching</a></h4>
                         <p class="description">Know what you want to get hold of? You can buy any current British Standard at the BSI Shop, as a PDF download or hard copy. You’ll also find much more here, including books and CDs explaining key standards, and how to license standards.</p>
                     </div>
                     <div class="col-lg-4 col-md-6 icon-box">
                         <div class="icon"><i class="bi bi-brightness-high"></i></div>
-                        <h4 class="title"><a href="">Light</a></h4>
+                        <h4 class="title"><a href="">Sea Tour</a></h4>
                         <p class="description">Get instant access to a vast array of standards, and discover quicker and easier ways to work with them.</p>
                     </div>
                     <div class="col-lg-4 col-md-6 icon-box">
@@ -298,7 +305,7 @@
                         <div class="box">
                             <span>03</span>
                             <h4>Discover</h4>
-                            <p>Great service, you will always feel well looked after. Great storytelling, we love our history and love to share the tales of Amsterdam</p>
+                            <p>Great service, you will always feel well looked after. Great storytelling, we love our history and love to share the tales of Sri Lanka</p>
                         </div>
                     </div>
 
@@ -313,7 +320,7 @@
                 <div class="section-title">
                     <h2>Portfolio</h2>
                     <p>
-                        At Radisson Hotel Group, we have engineered our global portfolio of brands to meet the needs of the changing travel sector. Our seven distinctive hotel brands have a clear brand segmentation with no overlapping.
+                        At Leisure Heaven, we have engineered our global portfolio of brands to meet the needs of the changing travel sector. Our seven distinctive hotel brands have a clear brand segmentation with no overlapping.
 
                         We are investing in our brands and hotels to create more value for our owners and offer exciting, new opportunities for future investors.
                     </p>
@@ -471,12 +478,6 @@
                                 <div class="member-info-content">
                                     <h4>Walter White</h4>
                                     <span>Chief Executive Officer</span>
-                                    <div class="social">
-                                        <a href=""><i class="bi bi-twitter"></i></a>
-                                        <a href=""><i class="bi bi-facebook"></i></a>
-                                        <a href=""><i class="bi bi-instagram"></i></a>
-                                        <a href=""><i class="bi bi-linkedin"></i></a>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -487,14 +488,8 @@
                             <img src="~/assets/img/team/team-2.jpg" class="img-fluid" alt="">
                             <div class="member-info">
                                 <div class="member-info-content">
-                                    <h4>Sarah Jhonson</h4>
-                                    <span>Product Manager</span>
-                                    <div class="social">
-                                        <a href=""><i class="bi bi-twitter"></i></a>
-                                        <a href=""><i class="bi bi-facebook"></i></a>
-                                        <a href=""><i class="bi bi-instagram"></i></a>
-                                        <a href=""><i class="bi bi-linkedin"></i></a>
-                                    </div>
+                                    <h4>Gorden Ramsey</h4>
+                                    <span>Head Cheff</span>
                                 </div>
                             </div>
                         </div>
@@ -506,13 +501,7 @@
                             <div class="member-info">
                                 <div class="member-info-content">
                                     <h4>William Anderson</h4>
-                                    <span>CTO</span>
-                                    <div class="social">
-                                        <a href=""><i class="bi bi-twitter"></i></a>
-                                        <a href=""><i class="bi bi-facebook"></i></a>
-                                        <a href=""><i class="bi bi-instagram"></i></a>
-                                        <a href=""><i class="bi bi-linkedin"></i></a>
-                                    </div>
+                                    <span>Hotel Manager</span>
                                 </div>
                             </div>
                         </div>
@@ -525,12 +514,6 @@
                                 <div class="member-info-content">
                                     <h4>Amanda Jepson</h4>
                                     <span>Accountant</span>
-                                    <div class="social">
-                                        <a href=""><i class="bi bi-twitter"></i></a>
-                                        <a href=""><i class="bi bi-facebook"></i></a>
-                                        <a href=""><i class="bi bi-instagram"></i></a>
-                                        <a href=""><i class="bi bi-linkedin"></i></a>
-                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -576,12 +559,45 @@
                         <div class="contact-email">
                             <i class="bi bi-envelope"></i>
                             <h3>Email</h3>
-                            <p><a href="mailto:info@sinhagiri.com">info@LEISUREHEAVEN.com</a></p>
+                            <p><a href="mailto:info@sinhagiri.com">info@leisureheaven.com</a></p>
                         </div>
                     </div>
 
                 </div>
 
+            </div>
+        </section><!-- End Contact Section -->
+        <section id="contact" class="contact" style="padding-top:0">
+            <div class="container">
+                <div class="row justify-content-center">
+                    <div class="section-title">
+                        <h2>Location</h2>
+                        <p></p>
+                    </div>
+                    <div class="col-md-6 justify-content-center">
+                        <div class="mapouter">
+                            <div class="gmap_canvas">
+                                <iframe width="600" height="500" id="gmap_canvas" src="https://maps.google.com/maps?q=galadhari&t=&z=17&ie=UTF8&iwloc=&output=embed" frameborder="0" scrolling="no" marginheight="0" marginwidth="0"></iframe><a href="https://youtube-embed-code.com"></a><br>
+                                <style>
+                                    .mapouter {
+                                        position: relative;
+                                        text-align: right;
+                                        height: 500px;
+                                        width: 600px;
+                                    }
+                                </style><a href="https://www.embedgooglemap.net">google iframe</a>
+                                <style>
+                                    .gmap_canvas {
+                                        overflow: hidden;
+                                        background: none !important;
+                                        height: 500px;
+                                        width: 600px;
+                                    }
+                                </style>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section><!-- End Contact Section -->
 
@@ -602,14 +618,12 @@
                                 SRI LANKA<br />
                                 <br />
                                 <strong>Phone:</strong> +94 11 123 1234<br>
-                                <strong>Email:</strong> info@sinhagiri.com<br>
+                                <strong>Email:</strong> info@leisureheaven.com<br>
                             </p>
                             <div class="social-links mt-3">
                                 <a href="#" class="twitter"><i class="bx bxl-twitter"></i></a>
                                 <a href="#" class="facebook"><i class="bx bxl-facebook"></i></a>
                                 <a href="#" class="instagram"><i class="bx bxl-instagram"></i></a>
-                                <a href="#" class="google-plus"><i class="bx bxl-skype"></i></a>
-                                <a href="#" class="linkedin"><i class="bx bxl-linkedin"></i></a>
                             </div>
                         </div>
                     </div>
@@ -628,11 +642,11 @@
                     <div class="col-lg-3 col-md-6 footer-links">
                         <h4>Our Services</h4>
                         <ul>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Web Design</a></li>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Web Development</a></li>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Product Management</a></li>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Marketing</a></li>
-                            <li><i class="bx bx-chevron-right"></i> <a href="#">Graphic Design</a></li>
+                            <li><i class="bx bx-chevron-right"></i> <a href="#services">Banquet Booking</a></li>
+                            <li><i class="bx bx-chevron-right"></i> <a href="#services">Bicycle Rental</a></li>
+                            <li><i class="bx bx-chevron-right"></i> <a href="#services">Outdoor Parties</a></li>
+                            <li><i class="bx bx-chevron-right"></i> <a href="#services">Bird Watching</a></li>
+                            <li><i class="bx bx-chevron-right"></i> <a href="#services">Sea Tour</a></li>
                         </ul>
                     </div>
 
@@ -650,9 +664,6 @@
         </div>
 
         <div class="container">
-            <div class="copyright">
-                &copy; Copyright <strong><span>Groovin</span></strong>. All Rights Reserved
-            </div>
             <div class="credits">
                 <!-- All the links in the footer should remain intact. -->
                 <!-- You can delete the links only if you purchased the pro version. -->

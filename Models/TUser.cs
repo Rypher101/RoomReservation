@@ -43,7 +43,6 @@ namespace RoomReservation.Models
         public decimal UserTp { get; set; }
         [Column("user_status", TypeName = "decimal(1, 0)")]
         public decimal UserStatus { get; set; }
-        [Required]
         [Column("user_type")]
         public bool? UserType { get; set; }
 

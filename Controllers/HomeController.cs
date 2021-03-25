@@ -50,6 +50,11 @@ namespace RoomReservation.Controllers
                 }
             }
 
+            if (HttpContext.Session.GetString("UName") != null)
+            {
+                ViewBag.Name = HttpContext.Session.GetString("UName").Split(" ")[0];
+            }
+            
             ViewBag.Customer = tot;
             ViewBag.Res = resv;
             return View();
@@ -419,6 +424,7 @@ namespace RoomReservation.Controllers
             if (HttpContext.Session.GetInt32("UID") != -1 && HttpContext.Session.GetInt32("UID") != null)
             {
                 TempData["User"] = true;
+                TempData["Name"] = HttpContext.Session.GetString("UName").Split(" ")[0]; ;
             }
             else
             {
