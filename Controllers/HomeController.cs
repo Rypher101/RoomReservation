@@ -55,7 +55,7 @@ namespace RoomReservation.Controllers
             {
                 ViewBag.Name = HttpContext.Session.GetString("UName").Split(" ")[0];
             }
-            
+
             ViewBag.Customer = tot;
             ViewBag.Res = resv;
             return View();
@@ -269,6 +269,7 @@ namespace RoomReservation.Controllers
                 if (await _context.SaveChangesAsync() > 0)
                 {
                     HttpContext.Session.SetInt32("pending", 0);
+                    HttpContext.Session.SetString("rooms", "");
                     return RedirectToAction(nameof(Complete));
                 }
 

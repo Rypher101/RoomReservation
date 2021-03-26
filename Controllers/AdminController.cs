@@ -91,7 +91,7 @@ namespace RoomReservation.Controllers
 
             var ch1 = new List<C1>();
             var ch2 = new List<C2>();
-            var total = dict2.Skip(1).Sum(x=>x.Value);
+            var total = dict2.Skip(1).Sum(x=>x.Value) == 0? 1 : dict2.Skip(1).Sum(x => x.Value);
 
             foreach (var item in dict1)
             {
@@ -363,7 +363,7 @@ namespace RoomReservation.Controllers
                 TempData["Error"] = "Insufficient login permission";
                 return RedirectToAction("Index", "Login");
             }
-            ViewData["CatId"] = new SelectList(_context.TCategories, "CatId", "CatId");
+            ViewBag.Cat = _context.TCategories.ToList();
             return View();
         }
 
